@@ -15,12 +15,15 @@ const MAX_EVENTS = 24;
 export function EventChips({
   scene,
   heldSlots,
+  flashSlots,
   onPress,
   onRelease,
   isAvailable,
 }: {
   scene: StructuredScene | null;
   heldSlots: number[];
+  // Slots to briefly highlight right after their command fires (momentary feedback).
+  flashSlots?: number[];
   onPress: (slot: number) => void;
   onRelease: (slot: number) => void;
   // Gate predicate: a locked player chip (prerequisites not met) renders greyed
@@ -52,6 +55,7 @@ export function EventChips({
               name={event.name}
               empty={detailEmpty && !event.name.trim()}
               pressed={heldSlots.includes(slot)}
+              flash={flashSlots?.includes(slot)}
               disabled={locked}
               onPress={() => onPress(slot)}
               onRelease={() => onRelease(slot)}

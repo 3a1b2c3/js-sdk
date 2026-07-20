@@ -1,6 +1,6 @@
 {
   "id": "movement-test",
-  "name": "Movement Test",
+  "name": "Movement & Environment Test",
   "description": "Locomotion/action-rig fixture — a businessman on an open GTA street for testing movement: WASD walk/sprint, look-camera, jump, crouch/stand, emote, and a pick-up interaction. Keys: 1 Sprint, 2 Wave, 3 Pick Up Cash; Space jump, C crouch. Director: Traffic Rushes Past, Gravity Weakens (physics). Third-person locomotion in an open world.",
   "objective": {
     "summary": "Move freely through the open street — walk, sprint, look around, jump, crouch and emote, and grab the loose cash on the sidewalk.",
@@ -13,7 +13,7 @@
     "reward": "Traffic Rushes Past"
   },
   "image": {
-    "label": "Movement Test",
+    "label": "Movement & Environment Test",
     "src": "/lingbot-cases/Gemini_Generated_Image_38hzcd38hzcd38hz.png"
   },
   "scene": {

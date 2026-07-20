@@ -221,6 +221,9 @@ export function LingbotWorldController({ className }: { className?: string }) {
   // is generating in the background.
   const [editingExampleId, setEditingExampleId] = useState<string | null>(null);
   const [heldSlots, setHeldSlots] = useState<number[]>([]);
+  // Slots to briefly (1s) highlight right after their command fires — momentary
+  // feedback so a tap is visible even when the chip isn't held.
+  const [flashSlots, setFlashSlots] = useState<number[]>([]);
 
   // Live read-only inspector — shown alongside the running generation
   // so the user can audit the current composed prompt and per-layer
@@ -563,12 +566,15 @@ export function LingbotWorldController({ className }: { className?: string }) {
     if (!msg?.type) return;
     switch (msg.type) {
       case "workers_ready":
+        console.log("[gen] workers_ready — tsp_size:", msg.tsp_size);
         setTspSize(msg.tsp_size ?? null);
         break;
       case "prompt_accepted":
+        console.log("[gen] prompt_accepted");
         setHasPrompt(true);
         break;
       case "image_accepted":
+        console.log("[gen] image_accepted:", msg.width, "x", msg.height);
         setHasImage(true);
         setImageInfo({ w: msg.width, h: msg.height });
         break;
@@ -584,12 +590,14 @@ export function LingbotWorldController({ className }: { className?: string }) {
         setCameraPoseActive(msg.camera_pose_active);
         break;
       case "generation_started":
+        console.log("[gen] ▶ generation_started — total chunks:", msg.chunk_num);
         setIsGenerating(true);
         setIsPaused(false);
         setChunkNum(msg.chunk_num);
         setChunkIndex(0);
         break;
       case "chunk_complete":
+        console.log(`[gen] chunk ${msg.chunk_index} complete — action: ${msg.active_action || "still"}`);
         setChunkIndex(msg.chunk_index);
         setActiveAction(msg.active_action || "still");
         // Age persistent facts one chunk. A `steps` fact that runs out (a
@@ -1202,6 +1210,16 @@ export function LingbotWorldController({ className }: { className?: string }) {
         const ev = events[slot];
         recordFired(ev?.name);
         logPlayerCmd("event_press", { slot, name: ev?.name });
+        // Flash the chip for 1s (momentary feedback so a tap is visible), and surface
+        // the command to the Director log locally too — dispatched always, the panel
+        // shows it even when the coordinator is disconnected.
+        setFlashSlots((f) => (f.includes(slot) ? f : [...f, slot]));
+        window.setTimeout(() => setFlashSlots((f) => f.filter((x) => x !== slot)), 1000);
+        if (ev?.name && typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("lingbot-player-cmd", { detail: { name: ev.name } }),
+          );
+        }
         // Player event may change shared vitals (fires once, on fresh press).
         // Prefer the event's explicit vital fields; fall back to name keywords.
         const change: VitalChange | null =
@@ -1391,6 +1409,9 @@ export function LingbotWorldController({ className }: { className?: string }) {
   const pendingStartRef = useRef<
     { image: SceneImage; prompt: string; errorLabel: string } | null
   >(null);
+  // Ref to connectAndStart (defined below), so applyScene / the connect effect can
+  // trigger auto-play without a forward reference.
+  const connectAndStartRef = useRef<() => void>(() => {});
 
   // Shared flow behind both the Quick Start examples and the custom scene:
   // clear held inputs, reset a running generation, and prep the image + prompt
@@ -1470,6 +1491,11 @@ export function LingbotWorldController({ className }: { className?: string }) {
         if (opts.image.kind === "url") setSentImagePreview(opts.image.src);
         else if (opts.image.kind === "file") setSentImagePreview(opts.image.previewUrl);
         setLoadingExampleId(null);
+        // Auto-play: if the session is already connected, start generation now. (The
+        // rebuild-loop churn that made this unsafe is fixed via next.config.) If not
+        // connected, the scene stays prepped and the connect effect below starts it
+        // once the session reaches ready — so picking a game always ends up playing.
+        if (isReadyRef.current) connectAndStartRef.current();
       } finally {
         isApplyingExampleRef.current = false;
       }
@@ -1569,14 +1595,19 @@ export function LingbotWorldController({ className }: { className?: string }) {
   // only when the user clicks Start; never automatically.
   const connectAndStart = useCallback(async () => {
     const pending = pendingStartRef.current;
+    console.log("[start] Start clicked → connectAndStart; pending =",
+      pending ? { imageKind: pending.image.kind, promptChars: pending.prompt.length } : "NULL (no game loaded?)");
     try {
       if (pending) {
         if (pending.image.kind === "url") {
+          console.log("[start] fetching scene image:", pending.image.src);
           const res = await fetch(pending.image.src);
           if (!res.ok) throw new Error(`Failed to load image (${res.status})`);
           const blob = await res.blob();
           const file = new File([blob], pending.image.name, { type: blob.type || "image/jpeg" });
+          console.log("[start] uploading image (", blob.size, "bytes)…");
           const ref = await uploadFile(file);
+          console.log("[start] uploaded, setImage ref=", ref);
           await lw2.setImage({ image: ref });
           setHasImage(true);
         } else if (pending.image.kind === "file") {
@@ -1584,19 +1615,42 @@ export function LingbotWorldController({ className }: { className?: string }) {
           await lw2.setImage({ image: ref });
           setHasImage(true);
           setPendingImage(null);
+          console.log("[start] image (file) set");
         }
+        console.log("[start] setPrompt (", pending.prompt.length, "chars)…");
         await lw2.setPrompt({ prompt: pending.prompt });
         setHasPrompt(true);
         pendingStartRef.current = null;
+        console.log("[start] image + prompt sent");
+      } else {
+        console.warn("[start] pendingStartRef is NULL — starting with no image/prompt (video may be blank). Pick a game before Start.");
       }
+      console.log("[start] calling lw2.start()…");
       await lw2.start();
       setIsGenerating(true);
+      console.log("[start] ✓ lw2.start() ok — generation started");
     } catch (err) {
-      console.error(err);
+      console.error("[start] ✗ FAILED — disconnecting session:", err);
       setErrorToast(err instanceof Error ? err.message : pending?.errorLabel ?? "Failed to start");
+      setIsGenerating(false);
+      try {
+        lw2.disconnect(); // tear down the session on a failed start (don't hang half-connected)
+      } catch (e) {
+        console.error("[start] disconnect after failure also failed:", e);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadFile]);
+
+  // Keep the ref pointing at the latest connectAndStart, and auto-play a scene that was
+  // picked while disconnected as soon as the session reaches ready.
+  useEffect(() => {
+    connectAndStartRef.current = connectAndStart;
+  }, [connectAndStart]);
+  useEffect(() => {
+    if (isReady && pendingStartRef.current) connectAndStartRef.current();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReady]);
 
   const sendLifecycle = (cmd: "start" | "pause" | "resume" | "reset") => {
     if (cmd === "start") {
@@ -1936,6 +1990,7 @@ export function LingbotWorldController({ className }: { className?: string }) {
       eventChips={{
         scene,
         heldSlots,
+        flashSlots,
         onPress: holdPress,
         onRelease: holdRelease,
         isAvailable: isAvailableNow,

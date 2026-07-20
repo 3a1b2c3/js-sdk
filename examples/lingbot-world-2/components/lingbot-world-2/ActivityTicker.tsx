@@ -13,6 +13,11 @@ export function ActivityTicker() {
 
   useEffect(() => {
     let alive = true;
+    let timer: ReturnType<typeof setTimeout>;
+    // 2s while healthy; exponential backoff to 30s while /api/activity is unreachable
+    // (dev server down / no coordinator) so a dead endpoint doesn't spam the console —
+    // the browser logs every failed request even though we catch it here.
+    let delay = 2000;
     const tick = async () => {
       try {
         const r = await fetch("/api/activity", { cache: "no-store" });
@@ -21,15 +26,17 @@ export function ActivityTicker() {
           setLines(j.lines ?? []);
           setOk(!!j.ok);
         }
+        delay = 2000; // success → back to fast polling
       } catch {
-        /* ignore transient fetch errors */
+        delay = Math.min(delay * 2, 30000); // failure → back off
+      } finally {
+        if (alive) timer = setTimeout(tick, delay);
       }
     };
     tick();
-    const id = setInterval(tick, 2000);
     return () => {
       alive = false;
-      clearInterval(id);
+      clearTimeout(timer);
     };
   }, []);
 

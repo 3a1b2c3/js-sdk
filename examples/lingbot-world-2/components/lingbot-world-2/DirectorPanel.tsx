@@ -172,6 +172,35 @@ export function DirectorPanel({
     if (el) el.scrollTop = el.scrollHeight;
   }, [activity]);
 
+  // Local player-command bridge: the controller dispatches a `lingbot-player-cmd`
+  // window event on every player action. When the coordinator is DISCONNECTED those
+  // actions can't round-trip through it, so surface them in the feed directly. When
+  // connected we skip it — the coordinator already echoes the action (avoids doubles).
+  const connectedRef = useRef(connected);
+  useEffect(() => {
+    connectedRef.current = connected;
+  }, [connected]);
+  const localSeqRef = useRef(-1);
+  useEffect(() => {
+    const onCmd = (e: Event) => {
+      if (connectedRef.current) return; // connected → coordinator echoes it
+      const name = (e as CustomEvent<{ name?: string }>).detail?.name;
+      if (!name) return;
+      const entry: ActivityEntry = {
+        id: localSeqRef.current--,
+        role: "player",
+        op: "log",
+        cmd: "action",
+        name,
+        detail: name,
+        ts: new Date().toLocaleTimeString(undefined, { hour12: false }),
+      };
+      setActivity((prev) => [...prev, entry].slice(-40));
+    };
+    window.addEventListener("lingbot-player-cmd", onCmd);
+    return () => window.removeEventListener("lingbot-player-cmd", onCmd);
+  }, []);
+
   // Per-game update, coordinator-independent: the controller broadcasts the
   // active scene's director events (localStorage + a window event) whenever a
   // scene is selected, so this panel's scene-event buttons update per game even

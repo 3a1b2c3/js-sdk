@@ -114,6 +114,7 @@ export function HoldChip({
   name,
   empty,
   pressed,
+  flash,
   disabled,
   onPress,
   onRelease,
@@ -122,10 +123,12 @@ export function HoldChip({
   name: string;
   empty: boolean;
   pressed: boolean;
+  flash?: boolean; // brief highlight after the command fires (momentary feedback)
   disabled: boolean;
   onPress: () => void;
   onRelease: () => void;
 }) {
+  const lit = pressed || flash; // amber highlight while held OR flashing
   const handlers =
     disabled || empty
       ? {}
@@ -150,7 +153,7 @@ export function HoldChip({
         "group flex items-center gap-1.5 rounded-full border px-2.5 py-1 mono-xs transition-colors text-left max-w-full select-none",
         (disabled || empty) && "opacity-40 cursor-not-allowed",
         !disabled && !empty && "cursor-pointer",
-        pressed
+        lit
           ? "border-amber-300/80 bg-amber-300/25 text-amber-100"
           : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10 hover:border-white/25",
       )}
@@ -158,7 +161,7 @@ export function HoldChip({
       <span
         className={cn(
           "inline-flex h-4 min-w-4 items-center justify-center rounded border px-0.5 text-[9px] font-bold",
-          pressed
+          lit
             ? "border-amber-300/80 bg-amber-300/30 text-amber-100"
             : "border-white/25 bg-white/10 text-white/80",
         )}
