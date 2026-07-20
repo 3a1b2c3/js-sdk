@@ -44,12 +44,6 @@
     },
     "events": [
       {
-        "name": "Sprint",
-        "actor": "player",
-        "detail": "The man breaks into a hard sprint down the boulevard, arms pumping and the briefcase swinging at his side as he races forward along the asphalt at full speed, his jacket flapping and his shadow streaking across the pavement. EXACTLY ONE man — a single lone figure, no duplicate and no clone.",
-        "health": 0
-      },
-      {
         "name": "Wave",
         "actor": "player",
         "detail": "The man lifts his free hand and waves it high overhead in a broad friendly wave, holding the briefcase in his other hand as he stands on the sidewalk, then lowers the hand back to his side. EXACTLY ONE man — a single lone figure, no duplicate and no clone.",
@@ -58,22 +52,50 @@
       {
         "name": "Pick Up Cash",
         "actor": "player",
-        "detail": "The man crouches and scoops the loose dollar bills up off the sidewalk, gathering the scattered notes into his hand and tucking them into his jacket — the bills now GONE from the pavement, leaving only bare grey concrete where they lay. EXACTLY ONE man — a single lone figure, no duplicate and no clone.",
+        "detail": "The man crouches and scoops the loose dollar bills up off the sidewalk, gathering the scattered notes into his hand and tucking them into his jacket — the bills now GONE from the pavement, leaving only bare grey concrete where they lay. EXACTLY ONE man — a single lone figure, no duplicate and no clone. He keeps hold of the leather briefcase in one hand throughout the action, never dropping or losing it.",
         "health": 0,
         "addItem": "cash"
       },
       {
-        "name": "Swim",
+        "name": "Dance",
         "actor": "player",
-        "requires": { "fired": ["Street Floods"] },
-        "detail": "The man wades in and swims through the deep floodwater, arms stroking through the murky brown water and legs kicking out behind him as he moves across the submerged boulevard, keeping his head above the surface. EXACTLY ONE man — a single lone figure, no duplicate and no clone.",
+        "detail": "The man breaks into a lively dance right there on the sidewalk, stepping and spinning and throwing his arms up in rhythm, the leather briefcase still in one hand and swinging at his side as he grooves in place. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
-        "name": "Dive",
+        "name": "Moonwalk",
         "actor": "player",
-        "requires": { "fired": ["Street Floods"] },
-        "detail": "The man takes a breath and dives down beneath the surface of the floodwater, plunging headfirst underwater with his legs kicking up behind him and a burst of bubbles trailing as he submerges below the murky surface. EXACTLY ONE man — a single lone figure, no duplicate and no clone.",
+        "detail": "The man glides smoothly backward across the pavement in a slick moonwalk, feet sliding heel-to-toe as he drifts back while appearing to step forward, the leather briefcase held at his side the whole time. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Salute",
+        "actor": "player",
+        "detail": "The man snaps a crisp salute, raising his free hand sharply to his brow and holding it a moment before dropping it back to his side, the leather briefcase held in his other hand the whole time. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Take a Bow",
+        "actor": "player",
+        "detail": "The man sweeps into a theatrical bow, bending forward at the waist with one arm crossed over his stomach and the leather briefcase swept out to the side, then straightens back up. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Fist Pump",
+        "actor": "player",
+        "detail": "The man pumps his free fist high into the air in a triumphant celebration, jabbing it upward a couple of times while gripping the leather briefcase in his other hand, then lowers his arm. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Point Ahead",
+        "actor": "player",
+        "detail": "The man raises his free arm and points sharply straight ahead down the boulevard, holding the pose with his arm extended and the leather briefcase in his other hand, then lowers it. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Spin Around",
+        "actor": "player",
+        "detail": "The man spins on the spot in a quick full turn, pivoting all the way around and back to face forward, the leather briefcase swinging out with the motion, then settles facing ahead again. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
@@ -109,13 +131,18 @@
       {
         "name": "Car Crash",
         "actor": "director",
-        "requires": { "firedAny": ["Car Pulls Up", "Traffic Rushes Past"] },
+        "requires": {
+          "firedAny": [
+            "Car Pulls Up",
+            "Traffic Rushes Past"
+          ]
+        },
         "detail": "Two cars collide in a violent crash at the traffic light straight ahead — metal crumpling and glass breaking as the vehicles smash together and skew across the intersection, one car flipping onto its side, smoke and steam rising from the crushed wreckage. From then on the wrecked cars STAY there, crashed and smoking across the intersection ahead. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Palm Tree Falls Over",
         "actor": "director",
-        "detail": "One of the tall palm trees in the row on the right topples and crashes over — its trunk cracking and the whole palm leaning, then falling, its fronds sweeping down as it comes crashing to the ground across the sidewalk on the right, kicking up a burst of dust where it lands. From then on that palm tree STAYS down, fallen across the pavement on the right. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
+        "detail": "EXACTLY ONE of the tall palm trees in the row on the right topples and crashes over — its trunk cracking and the whole palm leaning, then falling, its fronds sweeping down as it comes crashing to the ground across the sidewalk on the right, kicking up a burst of dust where it lands. From then on that palm tree STAYS down, fallen across the pavement on the right. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Gravity Weakens",

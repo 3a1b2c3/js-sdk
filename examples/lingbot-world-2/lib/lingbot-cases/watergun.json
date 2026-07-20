@@ -65,17 +65,6 @@
         "health": 0
       },
       {
-        "name": "Spray Screen",
-        "actor": "player",
-        "detail": "The player sweeps the water blaster upward and fires a wide fan of mist into the air just ahead, throwing up a shimmering curtain of spray that hangs between the camera and the aqua park to screen the view, then the mist drifts down and the blaster comes back to the ready position at the lower right.",
-        "removeItem": "water"
-      },
-      {
-        "name": "Dive Dodge",
-        "actor": "player",
-        "detail": "The player throws themselves into a sideways dive-roll across the bobbing inflatable platform, the view tumbling low and sideways through a burst of spray to dodge incoming water, then comes back up onto their feet with the water blaster raised again at the lower right."
-      },
-      {
         "name": "Sprint Charge",
         "actor": "player",
         "detail": "The player breaks into a hard sprint straight ahead, pounding across the pitching inflatable platforms with the water blaster held up, the floats and swimmers rushing past faster and water splashing up with every step, then eases back to a steady ready jog.",

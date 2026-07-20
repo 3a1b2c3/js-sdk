@@ -1381,9 +1381,20 @@ export function LingbotWorldController({ className }: { className?: string }) {
 
   // ---- Apply a scene: uploads image, sends prompt, starts generation ----
 
+  // Deferred model connection: applyScene stores the pending image + prompt here and
+  // does NOT touch the model backend. The model only connects when the user clicks Start
+  // (connectAndStart consumes this). Never auto-connect the model on scene load.
+  type SceneImage =
+    | { kind: "url"; src: string; name: string }
+    | { kind: "file"; file: File; previewUrl: string }
+    | { kind: "keep" };
+  const pendingStartRef = useRef<
+    { image: SceneImage; prompt: string; errorLabel: string } | null
+  >(null);
+
   // Shared flow behind both the Quick Start examples and the custom scene:
-  // clear held inputs, reset a running generation, upload the starting image,
-  // send the composed prompt, and auto-start.
+  // clear held inputs, reset a running generation, and prep the image + prompt
+  // for a MANUAL start (no auto-connect).
   const applyScene = useCallback(
     async (opts: {
       id: string;
@@ -1435,53 +1446,30 @@ export function LingbotWorldController({ className }: { className?: string }) {
 
         setLoadingExampleId(opts.id);
 
-        try {
-          // Upload the starting image ("keep" assumes the previously-sent
-          // image is still in place).
-          if (opts.image.kind === "url") {
-            const res = await fetch(opts.image.src);
-            if (!res.ok)
-              throw new Error(`Failed to load image (${res.status})`);
-            const blob = await res.blob();
-            const file = new File([blob], opts.image.name, {
-              type: blob.type || "image/jpeg",
-            });
-            const ref = await uploadFile(file);
-            await lw2.setImage({ image: ref });
-            setSentImagePreview(opts.image.src);
-            setHasImage(true);
-          } else if (opts.image.kind === "file") {
-            const ref = await uploadFile(opts.image.file);
-            await lw2.setImage({ image: ref });
-            setSentImagePreview(opts.image.previewUrl);
-            setHasImage(true);
-            // Don't revoke the previewUrl — it was just promoted to
-            // sentImagePreview, so the URL is still in use.
-            setPendingImage(null);
-          }
+        // Populate the scene LOCALLY first — the player-action chips, HUD, director
+        // events and prompt are CLIENT state and must not depend on the backend image
+        // upload or start succeeding. If the model isn't ready, setImage/start throws
+        // below (and is toasted), but the controls still render.
+        sceneRef.current = opts.scene;
+        setScene(opts.scene);
+        setActiveExampleId(opts.id);
+        initHud(opts.scene.hud); // set starting vitals + show/hide from JSON
+        pushSceneEvents(opts.scene); // hand director events to the Director panel
+        pushObjective(opts.objective ?? null); // HUD summary + Director intent
 
-          // Send the scene's composed prompt
-          sceneRef.current = opts.scene;
-          setScene(opts.scene);
-          setActiveExampleId(opts.id);
-          initHud(opts.scene.hud); // set starting vitals + show/hide from JSON
-          pushSceneEvents(opts.scene); // hand director events to the Director panel
-          pushObjective(opts.objective ?? null); // HUD summary + Director intent
-          const p = composePrompt(opts.scene, false, []).trim();
-          lastSentPromptRef.current = p;
-          await lw2.setPrompt({ prompt: p });
-          setHasPrompt(true);
-
-          // Auto-start after a short delay to let the backend process
-          await new Promise((r) => setTimeout(r, 1500));
-          await lw2.start();
-          setIsGenerating(true);
-        } catch (err) {
-          console.error(err);
-          setErrorToast(err instanceof Error ? err.message : opts.errorLabel);
-        } finally {
-          setLoadingExampleId(null);
-        }
+        // Prep the image + composed prompt for a MANUAL start. Do NOT touch the model
+        // backend here — no uploadFile / setImage / setPrompt / start — so loading a
+        // scene never connects or runs anything on the model. The model only connects
+        // when the user clicks Start (connectAndStart consumes pendingStartRef).
+        pendingStartRef.current = {
+          image: opts.image,
+          prompt: composePrompt(opts.scene, false, []).trim(),
+          errorLabel: opts.errorLabel,
+        };
+        lastSentPromptRef.current = pendingStartRef.current.prompt;
+        if (opts.image.kind === "url") setSentImagePreview(opts.image.src);
+        else if (opts.image.kind === "file") setSentImagePreview(opts.image.previewUrl);
+        setLoadingExampleId(null);
       } finally {
         isApplyingExampleRef.current = false;
       }
@@ -1576,9 +1564,46 @@ export function LingbotWorldController({ className }: { className?: string }) {
     return `Need to ${missing.join(" and ")}.`;
   }, [canStart, isReady, isGenerating, hasPrompt, hasImage]);
 
+  // Manual model connect + start — the ONLY path that touches the model backend for a
+  // scene. Uploads the pending image, sends the prompt, then starts generation. Runs
+  // only when the user clicks Start; never automatically.
+  const connectAndStart = useCallback(async () => {
+    const pending = pendingStartRef.current;
+    try {
+      if (pending) {
+        if (pending.image.kind === "url") {
+          const res = await fetch(pending.image.src);
+          if (!res.ok) throw new Error(`Failed to load image (${res.status})`);
+          const blob = await res.blob();
+          const file = new File([blob], pending.image.name, { type: blob.type || "image/jpeg" });
+          const ref = await uploadFile(file);
+          await lw2.setImage({ image: ref });
+          setHasImage(true);
+        } else if (pending.image.kind === "file") {
+          const ref = await uploadFile(pending.image.file);
+          await lw2.setImage({ image: ref });
+          setHasImage(true);
+          setPendingImage(null);
+        }
+        await lw2.setPrompt({ prompt: pending.prompt });
+        setHasPrompt(true);
+        pendingStartRef.current = null;
+      }
+      await lw2.start();
+      setIsGenerating(true);
+    } catch (err) {
+      console.error(err);
+      setErrorToast(err instanceof Error ? err.message : pending?.errorLabel ?? "Failed to start");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadFile]);
+
   const sendLifecycle = (cmd: "start" | "pause" | "resume" | "reset") => {
+    if (cmd === "start") {
+      void connectAndStart(); // deferred: connect the model + start only on the user's click
+      return;
+    }
     lw2[cmd]().catch((err) => console.error(err));
-    if (cmd === "start") setIsGenerating(true);
     if (cmd === "pause") setIsPaused(true);
     if (cmd === "resume") setIsPaused(false);
     if (cmd === "reset") {

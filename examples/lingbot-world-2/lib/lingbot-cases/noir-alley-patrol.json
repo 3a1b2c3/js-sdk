@@ -8,8 +8,8 @@
   },
   "scene": {
     "base": {
-      "default": "A narrow urban alley at night. The world contains EXACTLY ONE tall street lamp on the right at a fixed position AND EXACTLY ONE glowing neon shop sign on the left at a fixed position AND EXACTLY ONE glowing exit door at the far end of the alley straight ahead at a fixed position, a heavy door set into the wall at the very end of the lane, its edges outlined in bright glowing light that spills out across the wet cobblestones and marks the way out AND EXACTLY ONE green dumpster on the right at a fixed position. Dark brick walls, heavy rain falling, shiny puddles on the wet asphalt, yellow police tape, blue and red ambient light. Cinematic noir night, reflective wet surfaces.",
-      "downed": "A narrow urban alley at night where a uniformed police officer in dark blue tactical gear now lies COLLAPSED, FACE-DOWN and MOTIONLESS on the wet asphalt, sprawled in a spreading puddle, his empty hands limp at his sides — he does not get up. The world contains EXACTLY ONE tall street lamp on the right at a fixed position AND EXACTLY ONE glowing neon shop sign on the left at a fixed position AND EXACTLY ONE glowing exit door at the far end of the alley straight ahead at a fixed position, a heavy door set into the wall at the very end of the lane, its edges outlined in bright glowing light that spills out across the wet cobblestones and marks the way out AND EXACTLY ONE green dumpster on the right at a fixed position. Dark brick walls, heavy rain falling, shiny puddles, yellow police tape, blue and red ambient light. Cinematic noir night, reflective wet surfaces, rain pooling around the still body.",
+      "default": "A narrow urban alley at night. The world contains EXACTLY ONE tall street lamp on the right at a fixed position AND EXACTLY ONE glowing neon shop sign on the left at a fixed position AND EXACTLY ONE glowing exit door at the far end of the alley straight ahead at a fixed position, a heavy door set into the wall at the very end of the lane, its edges outlined in bright glowing light that spills out across the wet cobblestones and marks the way out AND EXACTLY ONE green dumpster on the right at a fixed position. Dark brick walls, shiny puddles on the damp asphalt, yellow police tape, blue and red ambient light, a dry night with no rain falling. Cinematic noir night, reflective wet surfaces.",
+      "downed": "A narrow urban alley at night where a uniformed police officer in dark blue tactical gear now lies COLLAPSED, FACE-DOWN and MOTIONLESS on the wet asphalt, sprawled in a spreading puddle, his empty hands limp at his sides — he does not get up. The world contains EXACTLY ONE tall street lamp on the right at a fixed position AND EXACTLY ONE glowing neon shop sign on the left at a fixed position AND EXACTLY ONE glowing exit door at the far end of the alley straight ahead at a fixed position, a heavy door set into the wall at the very end of the lane, its edges outlined in bright glowing light that spills out across the wet cobblestones and marks the way out AND EXACTLY ONE green dumpster on the right at a fixed position. Dark brick walls, shiny puddles on the damp asphalt, yellow police tape, blue and red ambient light, a dry night with no rain falling. Cinematic noir night, reflective wet surfaces.",
       "empty": ""
     },
     "player": {
@@ -110,6 +110,12 @@
             "Gunman on the Fire Escape"
           ]
         }
+      },
+      {
+        "name": "Rain Sweeps In",
+        "actor": "director",
+        "detail": "Heavy rain sweeps in and begins pouring down across the whole alley — sheets of rain falling through the blue and red neon light, streaking the dark brick walls and rippling the puddles on the wet asphalt, water streaming off every surface. From then on the rain KEEPS falling across the alley. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. The uniformed police officer himself stays the focus of the frame, unchanged in pose, position and appearance throughout — only the world around him changes.",
+        "health": 0
       },
       {
         "name": "Chicken Struts In",

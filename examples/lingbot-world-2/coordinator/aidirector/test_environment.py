@@ -59,16 +59,10 @@ def test_hazard() -> None:
         "no director hazard/accident event"
 
 
-def test_add_water_enables_swim() -> None:
-    # Director can ADD water (a flood), and swim/dive player actions gate on it.
-    flood = [e for e in DIRECTOR if "flood" in _blob(e) or "water" in _detail(e).lower()]
-    assert flood, "no director event that adds water"
-    flood_names = {e["name"] for e in flood}
-    swim = [e for e in EVENTS if e.get("actor", "player") == "player"
-            and any(w in _blob(e) for w in ("swim", "dive", "wade"))]
-    assert swim, "flood adds water but no swim/dive action uses it"
-    assert any(set(e.get("requires", {}).get("fired", [])) & flood_names for e in swim), \
-        "swim/dive action is not gated on the flood"
+def test_add_water() -> None:
+    # Director can ADD water to the world (a flood) — scene control / composition change.
+    assert any("flood" in _blob(e) or "water" in _detail(e).lower() for e in DIRECTOR), \
+        "no director event that adds water"
 
 
 def test_physics_control() -> None:
@@ -80,7 +74,7 @@ def test_physics_control() -> None:
 
 def main() -> None:
     tests = [test_add_objects, test_transform_objects, test_object_state_change,
-             test_hazard, test_add_water_enables_swim, test_physics_control]
+             test_hazard, test_add_water, test_physics_control]
     failures = 0
     print("== ENVIRONMENT (director scene control) ==")
     for t in tests:

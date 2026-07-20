@@ -45,40 +45,15 @@ def test_locomotion_split() -> None:
         "movement layer missing the idle/moving (locomotion) split"
 
 
-def test_sprint_action() -> None:
-    assert any(w in (e["name"] + " " + _detail(e)).lower()
-               for e in PLAYER for w in ("sprint", "run", "dash")), \
-        "no sprint/run locomotion action"
-
-
 def test_emote_action() -> None:
     assert any(w in (e["name"] + " " + _detail(e)).lower()
                for e in PLAYER for w in ("wave", "emote", "dance", "point", "gesture", "salute")), \
         "no emote action"
 
 
-def test_swim_action() -> None:
-    # Swimming — a locomotion modifier. A dry street has no water, so it's paired with a
-    # director flood event (scene control adds the water).
-    swim = [e for e in PLAYER if any(w in (e["name"] + " " + _detail(e)).lower()
-                                     for w in ("swim", "wade", "stroke"))]
-    assert swim, "no swim action"
-    assert any("flood" in (e["name"] + " " + _detail(e)).lower() or "water" in _detail(e).lower()
-               for e in DIRECTOR), "swim action with no director event that adds water"
-
-
-def test_dive_action() -> None:
-    # Diving — an underwater locomotion action; like Swim it needs water (director flood).
-    dive = [e for e in PLAYER if any(w in (e["name"] + " " + _detail(e)).lower()
-                                     for w in ("dive", "dives", "submerge", "underwater"))]
-    assert dive, "no dive action"
-    assert any("flood" in (e["name"] + " " + _detail(e)).lower() or "water" in _detail(e).lower()
-               for e in DIRECTOR), "dive action with no director event that adds water"
-
-
 def main() -> None:
     tests = [test_third_person_camera, test_vertical_actions, test_locomotion_split,
-             test_sprint_action, test_emote_action, test_swim_action, test_dive_action]
+             test_emote_action]
     failures = 0
     print("== MOVEMENT (player locomotion rig) ==")
     for t in tests:
