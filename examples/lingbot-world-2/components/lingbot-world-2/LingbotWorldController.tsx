@@ -1572,6 +1572,26 @@ export function LingbotWorldController({ className }: { className?: string }) {
     }
   }, [isReady, applyExample]);
 
+  // Deep link: `?game=<id>` (alias `?scene=<id>`) auto-selects that game on load — a
+  // shareable per-game link, e.g. http://localhost:3000/?game=case2_1012. applyExample
+  // loads it offline immediately and fully applies once the session connects. The id is
+  // the scene's `id` (STRUCTURED_EXAMPLES key); unknown ids warn. Runs once.
+  const deepLinkAppliedRef = useRef(false);
+  useEffect(() => {
+    if (deepLinkAppliedRef.current || typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("game") ?? params.get("scene");
+    if (!id) return;
+    deepLinkAppliedRef.current = true;
+    const ex = STRUCTURED_EXAMPLES[id];
+    if (!ex) {
+      console.warn(`[deep-link] no game with id "${id}" — check the ?game= param`);
+      return;
+    }
+    void applyExample(ex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [applyExample]);
+
   // ---- Lifecycle ----
 
   const canStart =

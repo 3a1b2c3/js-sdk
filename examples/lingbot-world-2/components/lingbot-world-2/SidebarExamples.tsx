@@ -5,6 +5,7 @@
 // override logic lives in the controller and is exposed via `hasOverride` +
 // callbacks.
 
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { StructuredExample } from "@/lib/lingbot-world-prompts";
 
@@ -27,6 +28,20 @@ export function SidebarExamples({
   onClearOverride: (id: string) => void;
   onEdit: (id: string) => void;
 }) {
+  // Per-game Share: copy a `?game=<id>` deep link. copiedId flashes "✓" on the card
+  // whose link was just copied. (The controller has the matching ?game= load handler.)
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const share = (id: string) => {
+    if (typeof window === "undefined") return;
+    const url = `${window.location.origin}${window.location.pathname}?game=${encodeURIComponent(id)}`;
+    navigator.clipboard
+      ?.writeText(url)
+      .then(() => {
+        setCopiedId(id);
+        window.setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1500);
+      })
+      .catch((e) => console.error("[share] clipboard write failed:", e));
+  };
   if (examples.length === 0) return null;
   return (
     <div className="flex flex-col gap-2">
@@ -114,6 +129,19 @@ export function SidebarExamples({
                   ↺
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => share(ex.id)}
+                title={`Copy a shareable link to "${ex.name}"  (?game=${ex.id})`}
+                className={cn(
+                  "shrink-0 w-9 flex items-center justify-center border-l border-white/5",
+                  "font-mono text-sm hover:bg-white/[0.06] transition-colors",
+                  copiedId === ex.id ? "text-emerald-300" : "text-white/55 hover:text-sky-200",
+                )}
+                aria-label={`Share ${ex.name}`}
+              >
+                {copiedId === ex.id ? "✓" : "🔗"}
+              </button>
               <button
                 type="button"
                 onClick={() => onEdit(ex.id)}
