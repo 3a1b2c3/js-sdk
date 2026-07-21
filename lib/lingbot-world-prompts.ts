@@ -8,6 +8,7 @@
 // hold-key events (keys 1..9) plus optional jump/crouch/stand prompts.
 
 import { LINGBOT_CASES_EXAMPLE_LIST } from "@/lib/lingbot-cases-examples";
+import type { EventGate } from "./event-gate";
 
 // A starting-image thumbnail for an example card. URLs are served out of
 // this app's public/ directory.
@@ -118,38 +119,11 @@ export interface NamedEvent {
   chance?: number;
 }
 
-// Declarative availability gate for an event. All present fields must hold.
-export interface EventGate {
-  fired?: string[]; //     ALL of these must have fired already (AND)
-  firedAny?: string[]; //  ANY one of these must have fired (OR)
-  notFired?: string[]; //  names of events that must NOT have fired yet
-  minChunks?: number; //   only after N generation chunks elapsed
-  maxHealth?: number; //   only when health <= this (e.g. 0 for a death trigger)
-  minHealth?: number; //   only when health >= this
-  hasItem?: string; //     only when this item is in the inventory
-}
-
-// Shared-state snapshot the gate is evaluated against.
-export interface GateState {
-  fired: ReadonlySet<string>;
-  chunks: number;
-  health: number;
-  inventory: readonly string[];
-}
-
-// Is `event` currently available given shared state? No gate → always available.
-export function isEventAvailable(event: NamedEvent, s: GateState): boolean {
-  const g = event.requires;
-  if (!g) return true;
-  if (g.fired && !g.fired.every((n) => s.fired.has(n))) return false;
-  if (g.firedAny && !g.firedAny.some((n) => s.fired.has(n))) return false;
-  if (g.notFired && g.notFired.some((n) => s.fired.has(n))) return false;
-  if (g.minChunks !== undefined && s.chunks < g.minChunks) return false;
-  if (g.maxHealth !== undefined && s.health > g.maxHealth) return false;
-  if (g.minHealth !== undefined && s.health < g.minHealth) return false;
-  if (g.hasItem !== undefined && !s.inventory.includes(g.hasItem)) return false;
-  return true;
-}
+// The gate types + predicate now live in ./event-gate — a dependency-free module (no
+// Next.js `@/` aliases, no scene data) so the coordinator's plain tsx can import the
+// SAME gating logic the client uses. Re-exported here for existing importers.
+export { isEventAvailable } from "./event-gate";
+export type { EventGate, GateState } from "./event-gate";
 
 // Per-scene HUD configuration. Optional — omitted → HUD hidden. Sets the
 // starting player vitals shown on the viewport overlay and the max the bar

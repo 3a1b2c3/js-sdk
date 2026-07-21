@@ -21,8 +21,7 @@
 
 import { appendFileSync } from "node:fs";
 import { WebSocketServer, WebSocket } from "ws";
-import { Engine } from "json-rules-engine";
-import { buildEngine } from "./rules";
+import { decideEvents, type DecideFacts } from "../lib/event-decide";
 import { firedEventNames, firedNameFromKey } from "./history-facts";
 import { History, type Fact } from "../lib/history";
 
@@ -264,7 +263,7 @@ function gameFacts(): Record<string, unknown> {
 const RULES_ENABLED = process.env.COORDINATOR_RULES !== "0";
 const RULE_COOLDOWN = Number(process.env.COORDINATOR_RULE_COOLDOWN ?? 12); // min chunks between fires (doubled to let the scene breathe)
 const RULE_WARMUP = 4; // ungated events wait this many chunks so the scene settles first
-let rulesEngine: Engine | null = null;
+let rulesActive = false;
 let lastRuleFireChunk = -1e9;
 // True while an AI director that does its OWN (VLM) deciding is connected. The rules
 // engine then stays dormant so the two never double-fire; a director run with
@@ -280,12 +279,8 @@ let aiModelConnected = false;
  *  lives in `./rules` (pure + unit-tested); this just owns the enabled/empty gating. */
 function rebuildRulesEngine(): void {
   lastRuleFireChunk = -1e9;
-  if (!RULES_ENABLED || sceneEvents.length === 0) {
-    rulesEngine = null;
-    return;
-  }
-  rulesEngine = buildEngine(sceneEvents, RULE_WARMUP);
-  console.log(`[rules] engine built: ${sceneEvents.length} rule(s)`);
+  rulesActive = RULES_ENABLED && sceneEvents.length > 0;
+  if (rulesActive) console.log(`[rules] active: ${sceneEvents.length} event(s)`);
 }
 
 /** Evaluate the rules against the live state and assert ONE fired event (paced). Among the
@@ -293,23 +288,16 @@ function rebuildRulesEngine(): void {
  *  so a mutex / flavor pool (all equal priority) gives every option an equal chance, while
  *  a higher-priority story beat still preempts. */
 async function runRules(): Promise<void> {
-  if (!rulesEngine || directorMode === "human") return; // rules ARE the AI director here
+  if (!rulesActive || directorMode === "human") return; // rules ARE the AI director here
   if (vlmDeciderPresent) return; // a VLM director is deciding — don't double-fire
   if (!aiModelConnected) return; // AI model not connected — don't fire blind (eyes shut)
   if (chunks - lastRuleFireChunk < RULE_COOLDOWN) return; // pace fires
-  let events: { params?: Record<string, unknown> }[];
-  try {
-    ({ events } = await rulesEngine.run(gameFacts()));
-  } catch (err) {
-    console.log(`[rules] run error: ${(err as Error).message}`);
-    return;
-  }
-  // Resolve to (sceneEvent, priority); drop any event without a matching scene event.
-  const eligible = events
-    .map((ev) => {
-      const name = ev.params?.name as string | undefined;
-      const se = name ? sceneEvents.find((s) => s.name === name) : undefined;
-      return se ? { name, se, p: Number(ev.params?.priority ?? 1) } : null;
+  // Decide via the SHARED gate predicate (isEventAvailable) + warmup/chance layering
+  // instead of a json-rules-engine pass — ONE gating semantics for client + coordinator.
+  const eligible = decideEvents(sceneEvents, gameFacts() as unknown as DecideFacts, RULE_WARMUP)
+    .map((name) => {
+      const se = sceneEvents.find((s) => s.name === name);
+      return se ? { name, se, p: 1 } : null; // flat priority — scenes don't set one
     })
     .filter((x): x is { name: string; se: SceneEvent; p: number } => x !== null);
   if (eligible.length === 0) return;
@@ -380,7 +368,7 @@ function unloadGame(reason: string): void {
   objective = null;
   history.clear(); // firedEvents fact is derived from History, so it clears with it
   observations = {};
-  rulesEngine = null; // no game -> no rules
+  rulesActive = false; // no game -> no rules
   lastRuleFireChunk = -1e9;
   entityCount = 0;
   chunks = 0;
