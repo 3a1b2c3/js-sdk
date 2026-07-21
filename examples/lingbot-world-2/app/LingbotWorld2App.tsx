@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { SnapClip } from "@/components/SnapClip";
 import { LingbotWorldController } from "@/components/lingbot-world-2/LingbotWorldController";
-import { DirectorPanel } from "@/components/lingbot-world-2/DirectorPanel";
+import { DirectorPanel } from "@/lib/DirectorPanel";
 import { ActivityTicker } from "@/components/lingbot-world-2/ActivityTicker";
 import { FrameTap } from "@/components/lingbot-world-2/FrameTap";
 
