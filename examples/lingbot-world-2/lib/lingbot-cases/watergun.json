@@ -105,9 +105,21 @@
         "detail": "A rival player ahead unloads a thick rope of glowing PURPLE slime straight at the camera — a heavy jet of vivid neon-purple goo, a completely DIFFERENT colour from the player's own green slime — that splatters across the lens and clings, oozing and dripping down the view in bold, saturated purple streaks and splotches that stay clearly marked before they slowly run off. EXACTLY ONE rival in frame — a single opponent, no duplicate and no clone."
       },
       {
+        "name": "Bathers Get Super Soakers",
+        "actor": "environment",
+        "health": -12,
+        "detail": "The director hands out huge super soakers to every bather in the aqua park, and the whole park opens fire at once — swimmers on every inflatable platform ahead and to both sides raising big bright pump-action water blasters and unleashing arcing jets of water toward the camera from all directions, crossing streams and spray filling the air as the bathers duck, weave and keep pumping. From then on the other bathers STAY armed with super soakers, firing back across the floats."
+      },
+      {
         "name": "Player Falls In",
         "actor": "environment",
         "detail": "A swimmer standing on the floats ahead loses their footing, arms wheeling, and topples off the inflatable into the green water with a big splash — they vanish under the surface for a moment, then bob back up in a life vest where the empty float now sits."
+      },
+      {
+        "name": "Crocodile Lunges",
+        "actor": "environment",
+        "health": -20,
+        "detail": "A big crocodile surges up out of the green quarry water beside the inflatable floats, jaws gaping wide as it lunges straight at the camera in a burst of spray and thrashing water, snapping close before it twists and slides back below the surface. From then on the crocodile lurks in the water, cruising the aqua park with just its eyes and snout above the surface. EXACTLY ONE crocodile in the water — a single lone crocodile, no duplicate and no clone."
       },
       {
         "name": "Wave Surge",

@@ -69,21 +69,9 @@
         "health": 0
       },
       {
-        "name": "Salute",
+        "name": "Stand on One Leg",
         "actor": "character",
-        "detail": "The man snaps a crisp salute, raising his free hand sharply to his brow and holding it a moment before dropping it back to his side, the leather briefcase held in his other hand the whole time. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
-        "health": 0
-      },
-      {
-        "name": "Take a Bow",
-        "actor": "character",
-        "detail": "The man sweeps into a theatrical bow, bending forward at the waist with one arm crossed over his stomach and the leather briefcase swept out to the side, then straightens back up. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
-        "health": 0
-      },
-      {
-        "name": "Fist Pump",
-        "actor": "character",
-        "detail": "The man pumps his free fist high into the air in a triumphant celebration, jabbing it upward a couple of times while gripping the leather briefcase in his other hand, then lowers his arm. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "detail": "The man lifts one foot off the pavement and balances on his other leg, standing on a single leg with his raised knee bent and his free arm out for balance, the leather briefcase still gripped in his other hand, holding the one-legged balance. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
@@ -96,6 +84,24 @@
         "name": "Spin Around",
         "actor": "character",
         "detail": "The man spins on the spot in a quick full turn, pivoting all the way around and back to face forward, the leather briefcase swinging out with the motion, then settles facing ahead again. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Check Watch",
+        "actor": "character",
+        "detail": "The man shoots his cuff and lifts his wrist, glancing down at his wristwatch for a moment in a quick businesslike check of the time, the leather briefcase still held in his other hand, then lowers his arm back to his side. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Answer Phone",
+        "actor": "character",
+        "detail": "The man raises a phone to his ear with his free hand and holds a call as he paces in place, his other hand still gripping the leather briefcase and gesturing lightly as he talks, then lowers the phone back down. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Drop Briefcase",
+        "actor": "character",
+        "detail": "The man opens his hand and drops the leather briefcase, letting it fall from his grip to land on the pavement at his feet where it comes to rest — the briefcase now DOWN on the ground, no longer in his hands, both hands empty at his sides. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
@@ -144,6 +150,11 @@
         "actor": "environment",
         "count": 1,
         "detail": "EXACTLY ONE of the tall palm trees in the row on the right topples and crashes over — its trunk cracking and the whole palm leaning, then falling, its fronds sweeping down as it comes crashing to the ground across the sidewalk on the right, kicking up a burst of dust where it lands. Only ONE palm falls, and it falls only this once — it does not rise back up, reset, or fall again, and no second palm topples: a single fallen palm, no duplicate and no clone. From then on that palm tree STAYS down, fallen across the pavement on the right. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
+      },
+      {
+        "name": "Helicopter Flies Over",
+        "actor": "environment",
+        "detail": "A news helicopter sweeps in low over the boulevard and crosses overhead, its rotor downwash kicking up dust, litter and loose dollar bills into swirling gusts along the street below, then it thunders past and banks away over the rooftops. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Gravity Weakens",

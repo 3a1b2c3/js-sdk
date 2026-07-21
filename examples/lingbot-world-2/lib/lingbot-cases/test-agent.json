@@ -1,7 +1,7 @@
 {
   "id": "test-agent",
   "name": "Test: Agent Tools",
-  "description": "Game-Cartridge fixture (wheat harvest) — the equipped-tool + world-consequence sandbox from the Roblox world-model post. ALL tools are present in the scene from the start (scythe in hand, rifle + torch on the ground); most actions are NOT chained. Keys: 1 Cut Wheat (scythe), 2 Shoot Rifle, 3 Drop Rifle, 4 Pick Up Torch, 5 Torch the Wheat; Space jump, C crouch. Director: Night Falls, Wind Picks Up, Fire Spreads. Exercises decomposed World/Character/Actions/Dynamics conditioning, player-vs-director split, prompt invariance, and VLM visual triggers.",
+  "description": "Game-Cartridge fixture (wheat harvest) — the equipped-tool + world-consequence sandbox from the Roblox world-model post. ALL tools are present in the scene from the start (scythe in hand, rifle + torch on the ground); most actions are NOT chained. Keys: cut wheat (scythe), shoot rifle, pick up torch, torch the wheat, and drop any tool — scythe / rifle / torch each have a drop; Space jump, C crouch. Director: Night Falls, Wind Picks Up, Fire Spreads. Exercises decomposed World/Character/Actions/Dynamics conditioning, player-vs-director split, prompt invariance, and VLM visual triggers.",
   "objective": {
     "summary": "Work the field however you like, then burn it — harvest the wheat, cycle through the tools, put a torch to the dry stalks, and let the fire spread until the whole field is scorched to blackened stubble.",
     "director": "Escalate toward destruction and build on what has happened: once the wheat is dry and the tools are out, spread the fire across the whole field until the crop is burned to blackened stubble. Do not repeat the same event back-to-back.",
@@ -59,6 +59,12 @@
         "health": 0
       },
       {
+        "name": "Drop Scythe",
+        "actor": "character",
+        "detail": "The farmer opens their hands and drops the long-handled scythe, letting it fall to the wheat stubble at their feet where it lies still; the farmer now stands empty-handed in the field with nothing in their hands. EXACTLY ONE farmer — a single lone figure, no duplicate and no clone.",
+        "health": 0
+      },
+      {
         "name": "Shoot Rifle",
         "actor": "character",
         "detail": "The farmer sets down the scythe, takes up the bolt-action rifle from the ground and raises it to their shoulder, then fires it across the wheat field — a bright muzzle flash and a puff of white smoke bursting from the barrel as the rifle kicks back against their shoulder. EXACTLY ONE farmer holding EXACTLY ONE rifle — a single lone figure, no duplicate and no clone.",
@@ -82,6 +88,13 @@
         "actor": "character",
         "requires": { "fired": ["Pick Up Torch"] },
         "detail": "The farmer lowers the flaming torch to the dry golden wheat and sweeps it along the base of the stalks, setting a spreading line of wheat ablaze — flames catching and climbing up through the crop where the torch passes as the fire takes hold across the nearest rows. EXACTLY ONE farmer holding EXACTLY ONE torch — a single lone figure, no duplicate and no clone.",
+        "health": 0
+      },
+      {
+        "name": "Drop Torch",
+        "actor": "character",
+        "requires": { "fired": ["Pick Up Torch"] },
+        "detail": "The farmer lets go of the flaming torch and it drops to the ground, landing in the stubble at their feet where it lies burning; the farmer now stands empty-handed in the field with nothing in their hands. EXACTLY ONE farmer — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {

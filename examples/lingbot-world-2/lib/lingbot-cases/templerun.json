@@ -76,7 +76,7 @@
       {
         "name": "Demon Ape Charges",
         "actor": "environment",
-        "detail": "The explorer himself is completely unchanged — same pose, same appearance, still running exactly as before; ONLY the world behind him changes: a single giant demonic ape monster BURSTS into view behind him, smashing out through the misty jungle ruins where there was nothing chasing him a moment before, jaws gaping wide in a snarl, its huge clawed hands swiping as it charges up the path after him, gaining and chasing. From now on the monster is present, looming and pursuing in the background. EXACTLY ONE ape monster, no second monster, no duplicate and no clone.",
+        "detail": "The explorer himself is completely unchanged — same pose, same appearance, still running exactly as before; ONLY the world behind him changes: a single giant demonic ape monster BURSTS into view behind him, smashing out through the misty jungle ruins where there was nothing chasing him a moment before, jaws gaping wide in a snarl, its huge clawed hands swiping as it charges up the path after him. From now on the monster is present, looming and pursuing in the background. It ALWAYS stays BEHIND the explorer, chasing from behind down the path — it never catches up to, draws level with, overtakes or passes him, and never appears in front of or ahead of him; the explorer stays out ahead the whole time. EXACTLY ONE ape monster, no second monster, no duplicate and no clone.",
         "health": -8
       },
       {

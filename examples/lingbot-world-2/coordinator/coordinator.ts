@@ -23,6 +23,7 @@ import { appendFileSync } from "node:fs";
 import { WebSocketServer, WebSocket } from "ws";
 import { Engine } from "json-rules-engine";
 import { buildEngine } from "./rules";
+import { firedEventNames, firedNameFromKey } from "./history-facts";
 import { History, type Fact } from "../lib/history";
 
 const PORT = Number(process.env.COORDINATOR_PORT ?? 8090);
@@ -231,24 +232,17 @@ const directorSockets = new Set<WebSocket>(); // sockets that registered as the 
 // (fired/notFired/minChunks/maxHealth/minHealth/hasItem) map 1:1 to rule conditions.
 let observations: Record<string, boolean> = {}; // rules fact: latest probe reads
 
-/** Fired display name for a History key (`scene:gunman_falls` -> "gunman falls"), or null. */
-function firedNameFromKey(key: string): string | null {
-  return key.startsWith("scene:") ? key.slice("scene:".length).replace(/_/g, " ") : null;
-}
+// Debug view: echo each false→true probe read into the activity feed. Off by
+// default (observations are high-frequency perception — see the `observe` handler).
+const OBSERVE_ACTIVITY = process.env.COORDINATOR_OBSERVE_ACTIVITY === "1";
 
-/** Fired scene-event display names, DERIVED from the one History (no cached copy). */
-function firedEventNames(): string[] {
-  return history
-    .snapshot()
-    .map((f) => firedNameFromKey(f.key))
-    .filter((n): n is string => n !== null);
-}
+// firedNameFromKey / firedEventNames now live in ./history-facts (pure + testable).
 
 /** The live coordinator state as a flat `json-rules-engine` facts object. Reads the
  *  current state each call (no copy); field names match the rules' `fact` names. */
 function gameFacts(): Record<string, unknown> {
   return {
-    firedEvents: firedEventNames(),
+    firedEvents: firedEventNames(history),
     health: vitals.health,
     maxHealth: vitals.maxHealth,
     inventory: vitals.inventory,
@@ -633,6 +627,18 @@ wss.on("connection", (ws) => {
         // The AI director posts the probe's latest yes/no reads so json-rules-engine
         // rules (and any observation-gated logic) can see what's on screen. Facts-only:
         // no History mutation, not mode-gated (perception, not a director action).
+        // Opt-in (COORDINATOR_OBSERVE_ACTIVITY=1): surface each predicate that flips
+        // false→true as a "yes" in the activity feed. Off by default — observations are
+        // high-frequency perception, so this is a debug view, not normal feed content.
+        // Transition-only (`!observations[id]`): probes post every pass, so logging on
+        // every frame would flood the ticker with the same read.
+        if (OBSERVE_ACTIVITY) {
+          for (const [id, val] of Object.entries(m.obs ?? {})) {
+            if (val && !observations[id]) {
+              sendAll(JSON.stringify({ type: "activity", id: ++activitySeq, role: "ai", op: "observe", name: id }));
+            }
+          }
+        }
         // MERGE, don't replace: a probe that answered "unknown" omits that id, so we
         // keep its previous value rather than update state on something it couldn't see.
         observations = { ...observations, ...(m.obs ?? {}) };

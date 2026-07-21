@@ -1,7 +1,7 @@
 {
   "id": "rodeo_bull_10",
   "name": "Rodeo Bull Ride",
-  "description": "Third-person rodeo bull ride — key 1 = thrown off, key 2 = wave hat, key 3 = barrel turn, key 4 = spur the bull, key 5 = tighten grip, key 6 = lean back, key 7 = free hand high; director controls the bull: buck / spin / bucks violently / spins hard / charges the rail / throws the rider; audience (visual): crowd erupts / recoils / stills / waves",
+  "description": "Third-person rodeo bull ride — key 1 = thrown off, key 2 = wave hat, key 3 = barrel turn, key 4 = spur the bull, key 5 = tighten grip, key 6 = lean back, key 7 = free hand high; director controls the bull: bucks violently / spins hard / charges the rail / throws the rider / stands still; audience (visual): crowd erupts / stills",
   "image": {
     "label": "Rodeo Bull Ride",
     "src": "/lingbot-cases/rodeo.jpg"
@@ -26,16 +26,6 @@
       }
     },
     "events": [
-      {
-        "name": "Buck",
-        "actor": "environment",
-        "detail": "The bull explodes into a violent buck, kicking its hind legs high and slamming its front hooves back down, hurling the cowboy up out of the saddle and back down again as dust bursts off the dirt; he snaps his free arm out, clings to the rope and rides it out. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone."
-      },
-      {
-        "name": "Spin",
-        "actor": "environment",
-        "detail": "The bull drops its shoulder and spins hard in a tight circle, whipping around again and again with its hooves tearing at the dirt, the cowboy leaning against the turn and fighting to stay centred over its back, then it straightens out of the spin. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone."
-      },
       {
         "name": "Thrown Off",
         "actor": "character",
@@ -111,19 +101,9 @@
         "detail": "The packed grandstands surge to their feet in a wave, arms thrown up and cowboy hats and banners waving wildly overhead, a sea of standing figures jumping and pumping their fists behind the rider. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone."
       },
       {
-        "name": "Crowd Recoils",
-        "actor": "environment",
-        "detail": "The crowd freezes mid-motion in a rippling wave, hands flying up to their faces and bodies half-rising and leaning forward, a grandstand full of tense, wide-eyed frozen figures. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone."
-      },
-      {
         "name": "Crowd Stills",
         "actor": "environment",
         "detail": "The crowd goes completely motionless, everyone frozen in place and leaning forward, hats and banners hanging still, not a single figure moving across the packed grandstand. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone."
-      },
-      {
-        "name": "Crowd Waves",
-        "actor": "environment",
-        "detail": "The whole crowd rises and drops in a rhythmic wave rolling along the bleachers, arms and hats pumping up and down in unison, the grandstand rippling with synchronized motion. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone."
       },
       {
         "name": "Rodeo Clown Distracts",
@@ -133,10 +113,10 @@
         "count": 1
       },
       {
-        "name": "Floodlights Flicker",
+        "name": "Bull Stands Still",
         "actor": "environment",
-        "detail": "The arena floodlights buzz and flicker, stuttering down toward darkness and plunging the dusty ring into deep shadow before snapping back on in a harsh white glare that throws long shifting shadows across the churned dirt. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone.",
-        "health": -5
+        "detail": "The bull settles out of its bucking and comes to a stand, planting all four hooves and holding still in the churned dirt, its sides heaving and nostrils flaring but no longer bucking, spinning or charging, the cowboy easing upright and catching his balance on its back. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. There is EXACTLY ONE bull — the animal — and EXACTLY ONE cowboy — the rider — in the arena: two clearly separate figures, the man distinct from the animal and never merged into it, no second bull and no second cowboy, no duplicate and no clone.",
+        "health": 5
       }
     ],
     "hud": {
