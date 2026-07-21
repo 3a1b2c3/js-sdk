@@ -91,9 +91,9 @@ model, with a VLM observer grounding pixels back into abstract state.
 | Prompt invariance              | landmark-anchored placement (`at the base of the tree`, `at a fixed position`) — never player-relative |
 | Quest progression              | gated director events (`requires`) + objective `reward` (win) |
 
-The **`agent-test`** scene (`lib/lingbot-cases/agent-test.json`) is the reference fixture for
+The **`test-agent`** scene (`lib/lingbot-cases/test-agent.json`) is the reference fixture for
 these mechanics; `coordinator/aidirector/test_agent_cartridge.py` (via `run_test_agent_cartridge.bat`)
-asserts them — decomposition, invariance, player/director split, gated progression, VLM triggers,
+asserts them — decomposition, invariance, character/environment split, gated progression, VLM triggers,
 and video-only prose.
 
 ---
@@ -169,11 +169,11 @@ Mode gate: `assert|retract|vital|count` from `human`/`ai` are dropped unless
 
 From a `lib/lingbot-cases/*.json` scene, the director reads:
 - `scene.base.default` → world identity (never contradicted).
-- `scene.events[*]` where `actor == "director"` → `{name, clause = detail(.static), health,
+- `scene.events[*]` where `actor == "environment"` → `{name, clause = detail(.static), health,
   addItem, count, requires, chance, win, baseVersion/cameraVersion/movementVersion}`.
 - `objective.director || objective.summary` → the standing goal.
 
-The AI and human directors fire from this SAME list. Player-actor events are the
+The AI and human directors fire from this SAME list. Character-actor events are the
 human player's hold-keys and are NOT in the director set.
 
 **Per-event fields that shape when/how an event fires:**

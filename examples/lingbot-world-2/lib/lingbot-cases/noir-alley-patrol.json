@@ -1,9 +1,9 @@
 {
   "id": "case1_0036",
-  "name": "Noir Alley Patrol",
+  "name": "Reactor: Noir Alley Patrol",
   "description": "Third-person noir alley — key 1 = fires pistol, key 2 = flamethrower, key 3 = fires rocket launcher, key 4 = knife attack, key 5 = take cover, key 6 = forward roll, key 7 = use flashlight, key 8 = sidestep dodge; director: gunman on the fire escape / chicken / drone / roof on fire / police car / exit door",
   "image": {
-    "label": "Noir Alley Patrol",
+    "label": "Reactor: Noir Alley Patrol",
     "src": "/lingbot-cases/noir-alley-patrol.jpg"
   },
   "scene": {
@@ -48,61 +48,61 @@
     "events": [
       {
         "name": "Fire Pistol",
-        "actor": "player",
+        "actor": "character",
         "detail": "The officer raises his service pistol in both gloved hands, arms extended ahead of him, and fires down the dark alley; the muzzle flash lights the falling rain, the recoil kicks the pistol back in his grip, and a spent casing clatters onto the wet asphalt. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Flamethrower",
-        "actor": "player",
+        "actor": "character",
         "detail": "The officer levels a flamethrower in both hands and unleashes a long, continuous jet of roaring flame straight ahead down the alley — one sustained, billowing stream of orange fire and black smoke that pours forward without pause, not separate shots, lighting up the wet brick walls and hissing against the falling rain. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Fire Rocket Launcher",
-        "actor": "player",
+        "actor": "character",
         "detail": "The officer hoists a shoulder-fired rocket launcher — an RPG: a long, heavy cylindrical steel tube resting across his shoulder, its wide bore pointing down the alley, gripped with both hands, not a handheld gun — and fires; the rocket blasts from the tube's mouth and flies off into the distance down the rain-slicked alley, dragging a long tail of orange flame and white smoke behind it, then slams into the distant brickwork and erupts in a massive fireball of flame, smoke, and flying debris. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Knife Attack",
-        "actor": "player",
+        "actor": "character",
         "detail": "The officer draws a combat knife into his gloved hand and slashes at the air in a swift, practiced motion; the steel blade flashes in the ambient light as it cuts through the rain and his grip tightens on the handle. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Take Cover",
-        "actor": "player",
+        "actor": "character",
         "health": 15,
         "detail": "The officer darts to the side and ducks down behind the green dumpster, pressing his back to it and lowering his head under cover, then peeks back out ready. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone. Throughout this action his hands hold NO gun and his service pistol stays holstered at his hip — he does not draw, hold, raise or point any firearm."
       },
       {
         "name": "Forward Roll",
-        "actor": "player",
+        "actor": "character",
         "detail": "The officer drops into a low crouch and executes a forward roll across the wet asphalt, tucking his shoulder and rising smoothly back to his feet. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone. Throughout this action his hands hold NO gun and his service pistol stays holstered at his hip — he does not draw, hold, raise or point any firearm.",
         "health": 0
       },
       {
         "name": "Use Flashlight",
-        "actor": "player",
+        "actor": "character",
         "detail": "The officer raises the flashlight in his gloved hand and sweeps its harsh white beam across the alley ahead, the shaft of light cutting through the falling rain and sliding over the wet brick walls, the green dumpster and the shop door, catching the drifting drops and glistening puddles, before he steadies the beam pointing straight down the alley. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone. Throughout this action, aside from the item already in his hands, he holds NO gun and his service pistol stays holstered at his hip — he does not draw, raise or point any firearm.",
         "health": 10
       },
       {
         "name": "Sidestep Dodge",
-        "actor": "player",
+        "actor": "character",
         "detail": "The officer sharply sidesteps and weaves to one side, snapping his body out of the line of fire in a quick evasive shuffle across the wet asphalt, then re-settles into a ready stance. EXACTLY ONE police officer in frame — a single lone officer, no second officer, no duplicate and no clone. Throughout this action his hands hold NO gun and his service pistol stays holstered at his hip — he does not draw, hold, raise or point any firearm.",
         "health": 5
       },
       {
         "name": "Gunman on the Fire Escape",
-        "actor": "director",
+        "actor": "environment",
         "detail": "EXACTLY ONE gunman appears on the FIRST-FLOOR landing of the metal fire escape above the alley ahead — one storey up on the lowest fire-escape platform, NEVER higher up the fire escape and NEVER down at street level — a single lone figure in a gray jacket with a mask covering his face, NO tactical gear, NO SWAT vest and no police markings, clearly not an officer. He raises a pistol and fires down toward the street, muzzle flashing in the rain, then ducks back. In response, the officer below reacts — he flinches and snaps his head up toward the gunman on the fire escape, his own hands empty and his service pistol holstered, ducking low and recoiling as the gunfire cracks down from above. He STAYS on that first-floor fire-escape landing the entire time and does NOT climb higher or come down to street level — he remains one storey up above the alley, never reaching the ground and never higher up. There is only ONE gunman, in a gray jacket and mask. The uniformed police officer himself stays the focus of the frame, unchanged in pose, position and appearance throughout — only the world around him changes.",
         "count": 1
       },
       {
         "name": "Gunman Falls",
-        "actor": "director",
+        "actor": "environment",
         "detail": "THE single gunman in the gray jacket and mask on the first-floor fire-escape landing — the only one, a lone masked figure in a gray jacket with no tactical gear — is hit, jerks, and slumps down dead right there ON the fire escape, crumpling against the metal railing and going limp draped over the first-floor landing one storey above the alley. He STAYS on that first-floor landing exactly where he was — he does NOT fall, topple, tumble, jump or drop down to the ground or the street below, staying on the first-floor fire-escape landing the whole time — and remains up there motionless and lifeless for the rest of the scene. EXACTLY ONE gunman, no second gunman, no duplicate and no clone. The uniformed police officer himself stays the focus of the frame, unchanged in pose, position and appearance throughout — only the world around him changes.",
         "count": -1,
         "requires": {
@@ -113,27 +113,27 @@
       },
       {
         "name": "Rain Sweeps In",
-        "actor": "director",
+        "actor": "environment",
         "detail": "Heavy rain sweeps in and begins pouring down across the whole alley — sheets of rain falling through the blue and red neon light, streaking the dark brick walls and rippling the puddles on the wet asphalt, water streaming off every surface. From then on the rain KEEPS falling across the alley. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. The uniformed police officer himself stays the focus of the frame, unchanged in pose, position and appearance throughout — only the world around him changes.",
         "health": 0
       },
       {
         "name": "Chicken Struts In",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A single scruffy chicken struts out into the middle of the rain-soaked alley, bobbing its head and pecking at the wet asphalt between the puddles, utterly out of place under the blue and red neon; it stays, wandering around near the officer's feet. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. The uniformed police officer himself stays the focus of the frame, unchanged in pose, position and appearance throughout — only the world around him changes.",
         "health": 0,
         "count": 1
       },
       {
         "name": "Drone Descends",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A small quadcopter drone drops down into the alley from above, hovering at head height with its rotors spinning and a red camera light glowing, drifting and bobbing as it tracks the officer through the falling rain; it stays, hovering nearby. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it. The uniformed police officer himself stays the focus of the frame, unchanged in pose, position and appearance throughout — only the world around him changes.",
         "health": -10,
         "count": 1
       },
       {
         "name": "Roof on Fire",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "minChunks": 20
         },
@@ -143,7 +143,7 @@
       },
       {
         "name": "Player Falls and Dies",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "downed",
         "cameraVersion": "downed",
         "movementVersion": "downed",
@@ -156,7 +156,7 @@
       },
       {
         "name": "Exit Door Appears",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "fired": [
             "Gunman on the Fire Escape"
@@ -170,7 +170,7 @@
       },
       {
         "name": "Reach the Door / Extraction",
-        "actor": "director",
+        "actor": "environment",
         "win": true,
         "baseVersion": "empty",
         "cameraVersion": "empty",
@@ -187,7 +187,7 @@
       },
       {
         "name": "Police Car Turns Up",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "empty",
         "cameraVersion": "empty",
         "movementVersion": "empty",

@@ -1,6 +1,6 @@
 @echo off
 setlocal enableextensions
-REM Agent / Game-Cartridge conformance tests for the `agent-test` scene: decomposed
+REM Agent / Game-Cartridge conformance tests for the `test-agent` scene: decomposed
 REM World/Character/Actions/Dynamics conditioning, landmark-anchored prompt invariance,
 REM player-vs-director split, gated quest progression + reward, VLM visual triggers,
 REM and video-only prose. Pure -- no VLM / coordinator / network, NOT billed.

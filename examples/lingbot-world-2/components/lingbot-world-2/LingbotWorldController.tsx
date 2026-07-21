@@ -1203,7 +1203,7 @@ export function LingbotWorldController({ className }: { className?: string }) {
     (slot: number) => {
       const events = sceneRef.current?.events;
       if (!events || slot < 0 || slot >= events.length) return;
-      if (events[slot]?.actor === "director") return; // director events use ALPHABETIC hotkeys (fireDirectorEvent), not number keys
+      if (events[slot]?.actor === "environment") return; // director (environment) events use ALPHABETIC hotkeys (fireDirectorEvent), not number keys
       if (!isAvailableNow(events[slot])) return; // gated: prerequisites not met yet
       if (!heldSlotsRef.current.includes(slot)) {
         heldSlotsRef.current = [...heldSlotsRef.current, slot];

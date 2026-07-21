@@ -1,4 +1,4 @@
-"""Movement / locomotion-rig tests for the `movement-test` scene.
+"""Movement / locomotion-rig tests for the `test-movement` scene.
 
 Checks the blog's movement capabilities — "agile locomotion: 1st/3rd person, jumping,
 sprinting, swimming, emoting" — as exposed by the harness: a third-person camera rig,
@@ -15,11 +15,11 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-GAME = json.load(open(os.path.join(HERE, "..", "..", "lib", "lingbot-cases", "movement-test.json"), encoding="utf-8"))
+GAME = json.load(open(os.path.join(HERE, "..", "..", "lib", "lingbot-cases", "test-movement.json"), encoding="utf-8"))
 SCENE = GAME["scene"]
 EVENTS = SCENE["events"]
-DIRECTOR = [e for e in EVENTS if e.get("actor") == "director"]
-PLAYER = [e for e in EVENTS if e.get("actor", "player") == "player"]
+DIRECTOR = [e for e in EVENTS if e.get("actor") == "environment"]
+PLAYER = [e for e in EVENTS if e.get("actor", "character") == "character"]
 
 
 def _detail(e: dict) -> str:

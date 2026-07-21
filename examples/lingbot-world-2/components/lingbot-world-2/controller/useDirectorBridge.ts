@@ -62,7 +62,7 @@ export function useDirectorBridge({
     (sc: StructuredScene | null) => {
       const gs = gateStateNow();
       const list = (sc?.events ?? [])
-        .filter((e) => e.actor === "director")
+        .filter((e) => e.actor === "environment")
         .map((e) => ({
           name: e.name,
           clause: typeof e.detail === "string" ? e.detail : e.detail.static,

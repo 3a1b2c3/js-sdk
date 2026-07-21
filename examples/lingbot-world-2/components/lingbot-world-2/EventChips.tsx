@@ -40,7 +40,7 @@ export function EventChips({
       <div className="flex flex-wrap gap-1">
         {scene.events.slice(0, MAX_EVENTS).map((event, slot) => {
           // Director-owned events (scene change / death) aren't player keys.
-          if (event.actor === "director") return null;
+          if (event.actor === "environment") return null;
           const detailEmpty =
             typeof event.detail === "string"
               ? !event.detail.trim()

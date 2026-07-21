@@ -1,4 +1,4 @@
-"""Environment / director scene-control tests for the `movement-test` scene.
+"""Environment / director scene-control tests for the `test-movement` scene.
 
 Checks the blog's scene-control capabilities — "changing the scene composition,
 adding or removing objects; NPCs; physics-level control" — as director events that
@@ -16,10 +16,10 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-GAME = json.load(open(os.path.join(HERE, "..", "..", "lib", "lingbot-cases", "movement-test.json"), encoding="utf-8"))
+GAME = json.load(open(os.path.join(HERE, "..", "..", "lib", "lingbot-cases", "test-movement.json"), encoding="utf-8"))
 SCENE = GAME["scene"]
 EVENTS = SCENE["events"]
-DIRECTOR = [e for e in EVENTS if e.get("actor") == "director"]
+DIRECTOR = [e for e in EVENTS if e.get("actor") == "environment"]
 
 
 def _detail(e: dict) -> str:

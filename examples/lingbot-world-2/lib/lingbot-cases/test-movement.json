@@ -1,6 +1,6 @@
 {
-  "id": "movement-test",
-  "name": "Movement & Environment Test",
+  "id": "test-movement",
+  "name": "Test: Movement & Environment",
   "description": "Locomotion/action-rig fixture — a businessman on an open GTA street for testing movement: WASD walk/sprint, look-camera, jump, crouch/stand, emote, and a pick-up interaction. Keys: 1 Sprint, 2 Wave, 3 Pick Up Cash; Space jump, C crouch. Director: Traffic Rushes Past, Gravity Weakens (physics). Third-person locomotion in an open world.",
   "objective": {
     "summary": "Move freely through the open street — walk, sprint, look around, jump, crouch and emote, and grab the loose cash on the sidewalk.",
@@ -13,7 +13,7 @@
     "reward": "Traffic Rushes Past"
   },
   "image": {
-    "label": "Movement & Environment Test",
+    "label": "Test: Movement & Environment",
     "src": "/lingbot-cases/Gemini_Generated_Image_38hzcd38hzcd38hz.png"
   },
   "scene": {
@@ -45,92 +45,92 @@
     "events": [
       {
         "name": "Wave",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man lifts his free hand and waves it high overhead in a broad friendly wave, holding the briefcase in his other hand as he stands on the sidewalk, then lowers the hand back to his side. EXACTLY ONE man — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Pick Up Cash",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man crouches and scoops the loose dollar bills up off the sidewalk, gathering the scattered notes into his hand and tucking them into his jacket — the bills now GONE from the pavement, leaving only bare grey concrete where they lay. EXACTLY ONE man — a single lone figure, no duplicate and no clone. He keeps hold of the leather briefcase in one hand throughout the action, never dropping or losing it.",
         "health": 0,
         "addItem": "cash"
       },
       {
         "name": "Dance",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man breaks into a lively dance right there on the sidewalk, stepping and spinning and throwing his arms up in rhythm, the leather briefcase still in one hand and swinging at his side as he grooves in place. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Moonwalk",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man glides smoothly backward across the pavement in a slick moonwalk, feet sliding heel-to-toe as he drifts back while appearing to step forward, the leather briefcase held at his side the whole time. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Salute",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man snaps a crisp salute, raising his free hand sharply to his brow and holding it a moment before dropping it back to his side, the leather briefcase held in his other hand the whole time. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Take a Bow",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man sweeps into a theatrical bow, bending forward at the waist with one arm crossed over his stomach and the leather briefcase swept out to the side, then straightens back up. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Fist Pump",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man pumps his free fist high into the air in a triumphant celebration, jabbing it upward a couple of times while gripping the leather briefcase in his other hand, then lowers his arm. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Point Ahead",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man raises his free arm and points sharply straight ahead down the boulevard, holding the pose with his arm extended and the leather briefcase in his other hand, then lowers it. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Spin Around",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man spins on the spot in a quick full turn, pivoting all the way around and back to face forward, the leather briefcase swinging out with the motion, then settles facing ahead again. EXACTLY ONE man — a single lone figure, the only person in the scene, no second man, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Billboards Turn Neon",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "neon",
         "detail": "Every billboard along the boulevard flickers and transforms into a blazing neon sign — the roadside billboards igniting with bright electric neon light in vivid pink, blue and green, their faces now glowing neon artwork that casts coloured light across the street as the sky dims toward dusk. From then on the billboards STAY neon, glowing bright. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Traffic Light Turns Red",
-        "actor": "director",
+        "actor": "environment",
         "detail": "The traffic light straight ahead switches to red — its top lamp glowing bright red at that fixed position ahead while the amber and green lamps go dark, casting a faint red glow over the intersection. From then on the light STAYS red, glowing at the fixed traffic light ahead. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Street Floods",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "flooded",
         "detail": "Water surges in and floods the whole boulevard — brown floodwater rising fast across the asphalt and up over the sidewalks until the street is submerged waist-deep, litter and debris floating on the rising surface. From then on the street STAYS flooded, deep water across the whole boulevard. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Car Pulls Up",
-        "actor": "director",
+        "actor": "environment",
         "chance": 0.3,
         "detail": "A car drives up the boulevard and pulls in to the curb beside the row of palm trees on the right, easing to a stop and parking at that fixed spot — one more car added to the street. EXACTLY ONE car pulls up at the curb on the right, a single parked car, no duplicate and no clone. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes.",
         "count": 1
       },
       {
         "name": "Traffic Rushes Past",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A stream of cars floods onto the boulevard and rushes past the man — sedans, trucks and taxis speeding down the asphalt in both directions, sunlight flashing off their windscreens and heat-haze rising off the road as the once-empty street fills with fast-moving traffic. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes.",
         "win": true
       },
       {
         "name": "Car Crash",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "firedAny": [
             "Car Pulls Up",
@@ -141,12 +141,12 @@
       },
       {
         "name": "Palm Tree Falls Over",
-        "actor": "director",
+        "actor": "environment",
         "detail": "EXACTLY ONE of the tall palm trees in the row on the right topples and crashes over — its trunk cracking and the whole palm leaning, then falling, its fronds sweeping down as it comes crashing to the ground across the sidewalk on the right, kicking up a burst of dust where it lands. From then on that palm tree STAYS down, fallen across the pavement on the right. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Gravity Weakens",
-        "actor": "director",
+        "actor": "environment",
         "movementVersion": "lowgravity",
         "baseVersion": "lowgravity",
         "detail": "The pull of gravity weakens across the whole street — the man, the dust, the litter and the loose dollar bills all begin to float and hang in the air, rising slowly and settling in gentle slow motion as though the world has gone near-weightless. From then on the world STAYS in low gravity, everything drifting and floating. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the physics around him changes."

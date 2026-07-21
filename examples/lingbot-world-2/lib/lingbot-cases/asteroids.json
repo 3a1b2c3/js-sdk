@@ -28,31 +28,31 @@
     "events": [
       {
         "name": "Fire Cannons",
-        "actor": "player",
+        "actor": "character",
         "detail": "The ship's forward laser cannons open fire straight ahead, spitting rapid bright blue energy bolts that streak into the asteroid field; the muzzles flash, the hull shudders faintly with each shot, and a nearby asteroid bursts into glowing fragments and rock dust. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": 0
       },
       {
         "name": "Launch Missiles",
-        "actor": "player",
+        "actor": "character",
         "detail": "A single missile blasts from the ship's underwing hardpoint and streaks ahead down the field, dragging a long trail of white smoke and orange flame as it corkscrews toward a distant asteroid, then slams into it and erupts in a bright expanding fireball of debris. EXACTLY ONE rocket in frame — one single missile, no second missile, no twin missiles, no duplicate and no clone. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": 0
       },
       {
         "name": "Afterburner Boost",
-        "actor": "player",
+        "actor": "character",
         "detail": "The ship's blue thrusters flare into a brilliant white-hot afterburner and the ship surges forward with a sudden burst of speed, the asteroids stretching and rushing past in a blur of motion streaks as the engines roar. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": 0
       },
       {
         "name": "Barrel Roll",
-        "actor": "player",
+        "actor": "character",
         "detail": "The ship snaps into a fast barrel roll, rotating cleanly around its own axis to dodge, its thrusters tracing a spiraling blue arc through the drifting rocks before it levels out and steadies. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": 5
       },
       {
         "name": "Deploy Shield",
-        "actor": "player",
+        "actor": "character",
         "requires": {
           "minChunks": 20
         },
@@ -61,25 +61,25 @@
       },
       {
         "name": "Shatter Asteroid",
-        "actor": "player",
+        "actor": "character",
         "detail": "The ship locks onto the large spire-shaped asteroid straight ahead and unleashes a concentrated burst of blue cannon fire into it; the impacts flare bright, jagged cracks race across the rock, and the asteroid SPLITS APART into several massive tumbling chunks that break away and drift in different directions, trailing glowing debris, sparks, and expanding clouds of rock dust as the pieces spread across the field. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": 0
       },
       {
         "name": "Lightspeed",
-        "actor": "player",
+        "actor": "character",
         "detail": "The ship jumps to lightspeed — the engines flare into a blinding blue-white burst and the whole starfield snaps into motion, every star stretching and smearing into long luminous trails of light that streak past the hull in radiant parallel lines converging toward a bright point ahead, the asteroids blurring away into the warp as the ship surges forward down a tunnel of streaking star-trails, then drops back out to normal speed. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": 0
       },
       {
         "name": "UFO Appears",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A sleek alien UFO — a smooth metallic saucer ringed with pulsing green and violet lights — drops out of the starfield ahead and glides into view among the asteroids, hovering silently with a soft glow; its rotating underside sweeps thin beams of light across the drifting rocks as it settles into the scene. EXACTLY ONE UFO in frame — one single saucer, no second UFO, no duplicate and no clone of it. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": -5
       },
       {
         "name": "Land on Planet",
-        "actor": "player",
+        "actor": "character",
         "requires": {
           "minChunks": 50
         },
@@ -88,13 +88,13 @@
       },
       {
         "name": "Enemy Fighter Attacks",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A single hostile alien fighter — a lean dart-shaped craft with glowing red engine slits — swoops in from the starfield ahead and strafes the ship, spitting streaks of red plasma fire that flash past the hull and scatter off the asteroids. EXACTLY ONE enemy fighter in frame — one single attacker, no second fighter, no duplicate and no clone of it. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": -10
       },
       {
         "name": "Asteroid Storm",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "notFired": [
             "Solar Flare",
@@ -107,7 +107,7 @@
       },
       {
         "name": "Solar Flare",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "notFired": [
             "Asteroid Storm",
@@ -120,7 +120,7 @@
       },
       {
         "name": "Wormhole Opens",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "minChunks": 100
         },
@@ -131,7 +131,7 @@
       },
       {
         "name": "Enter the Wormhole",
-        "actor": "player",
+        "actor": "character",
         "baseVersion": "empty",
         "cameraVersion": "empty",
         "movementVersion": "empty",
@@ -148,7 +148,7 @@
       },
       {
         "name": "Comet Streaks By",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "notFired": [
             "Asteroid Storm",
@@ -161,19 +161,19 @@
       },
       {
         "name": "Repair Beacon Appears",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A friendly repair beacon — a compact drone-buoy pulsing with steady green light and ringed by a soft healing glow — drifts into view among the asteroids ahead and hovers, sweeping a gentle restorative beam of green energy over the ship's hull. EXACTLY ONE repair beacon in frame — one single buoy, no second beacon, no duplicate and no clone of it. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it.",
         "health": 10
       },
       {
         "name": "Planet Looms Closer",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A vast planet swells larger and larger dead ahead through the starfield, looming steadily closer as the ship races toward it — its curved surface, swirling cloud bands and glowing atmosphere growing to fill more and more of the view, drawing nearer and nearer and dominating the starfield ahead. EXACTLY ONE planet, a single planet, no second planet, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Hull Breach",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "maxHealth": 20,
           "minChunks": 30

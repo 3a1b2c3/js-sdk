@@ -39,12 +39,12 @@
     "events": [
       {
         "name": "Open Portal",
-        "actor": "player",
+        "actor": "character",
         "detail": "The figure levels the portal device and fires; a fresh swirling portal blooms open ahead on the chamber wall — a spinning liquid vortex of blue light, shimmering particles and rippling distortion spiralling outward from the point of impact, then holding steady and pulsing. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Cyberpunk City Portal",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "empty",
         "cameraVersion": "empty",
         "movementVersion": "empty",
@@ -52,7 +52,7 @@
       },
       {
         "name": "Forest Portal",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "empty",
         "cameraVersion": "empty",
         "movementVersion": "empty",
@@ -60,12 +60,12 @@
       },
       {
         "name": "Portal Blast",
-        "actor": "player",
+        "actor": "character",
         "detail": "The figure thrusts the device forward and a surging bolt of blue portal energy fires straight ahead, crackling with electric arcs and trailing shimmering particles, then bursts against the far wall in a ripple of distortion before the device settles back to a steady hum. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Close Portal",
-        "actor": "player",
+        "actor": "character",
         "detail": "The swirling portal ahead collapses inward, its vortex spiralling tighter and its glow drawing down to a single bright point before it winks out with a soft shimmer, leaving only the dim fog-filled chamber and the device's faint blue hum. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       }
     ],

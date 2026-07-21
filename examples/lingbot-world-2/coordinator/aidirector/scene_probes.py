@@ -99,7 +99,7 @@ def derive_probes(scene: dict[str, Any], include_player_actions: bool = True,
     # pass asks it only when the gate is currently valid (ungated -> always; gated ->
     # once its predecessor has fired), so locked beats aren't probed until they unlock.
     for e in sc.get("events", []) or []:
-        if e.get("actor") != "director":
+        if e.get("actor") != "environment":
             continue
         det = e.get("detail")
         gloss = _first_sentence(det if isinstance(det, str) else (det or {}).get("static", ""), 90)
@@ -108,11 +108,11 @@ def derive_probes(scene: dict[str, Any], include_player_actions: bool = True,
                        "observe": _slug(e.get("name", "")),
                        "requires": e.get("requires")})
 
-    # player actions (actor "player" or unset default) -> "is the character doing this
+    # character actions (actor "character" or unset default) -> "is the character doing this
     # now?" observation. Same gate tag — a locked action can't be happening yet.
     if include_player_actions:
         for e in sc.get("events", []) or []:
-            if e.get("actor", "player") != "player":
+            if e.get("actor", "character") != "character":
                 continue
             det = e.get("detail")
             gloss = _first_sentence(det if isinstance(det, str) else (det or {}).get("static", ""), 90)

@@ -248,7 +248,7 @@ The model only ever sees one prose string, but the app authors it in layers — 
 | --------------------- | -------------------------------------------------------------------------------------------- |
 | `base`                | World identity: subject, environment, style. Always present.                                 |
 | `camera` / `movement` | Each has `static` and `dynamic` variants — selected by whether the user is currently moving. |
-| `events[]`            | Detail clauses. **Player** events (`actor:"player"`, default) render as chips 1–24 and stack while held, drop on release; **only the first nine are keyboard-bound** (number keys 1–9), the rest are click-only. **Director** events (`actor:"director"`) are world beats fired from the Director panel / letter hotkeys and asserted as persistent History facts (see below). Any event may carry `requires` (a gate) and `count`; see [Event gating](#event-gating--requires) and [Consistency guards](#consistency-guards--the-exactly-one-rule). |
+| `events[]`            | Detail clauses. **Player** events (`actor:"character"`, default) render as chips 1–24 and stack while held, drop on release; **only the first nine are keyboard-bound** (number keys 1–9), the rest are click-only. **Director** events (`actor:"environment"`) are world beats fired from the Director panel / letter hotkeys and asserted as persistent History facts (see below). Any event may carry `requires` (a gate) and `count`; see [Event gating](#event-gating--requires) and [Consistency guards](#consistency-guards--the-exactly-one-rule). |
 | vertical              | The jump / crouch / stand sentence while those controls are engaged.                         |
 
 `composePrompt(scene, isMoving, heldSlots, verticalPrompt)` flattens the active selection to prose. `recomputePromptAndSend()` calls it whenever any input changes, dedupes against the last sent string, and sends `set_prompt`. The prompt therefore always narrates what the controls are doing — that text/motion coherence is why driving feels responsive.
@@ -264,12 +264,12 @@ Rules when extending:
 
 Each event's `actor` decides how it reaches the model:
 
-- **Player** (`actor:"player"`, default) — a character action on a chip. `holdPress(slot)` adds it to `heldSlots`; `composePrompt` stacks its `detail` while held. Chips render for up to `MAX_EVENTS` (24) player events, but `keyToHoldSlot` only maps the **number keys 1–9** to slots 0–8 — author your most-used actions first so they get a hotkey, and remember the 10th+ event is click-only. Order matters: `EventChips.tsx` lists player events before director chips, so put player events first in the JSON `events[]` array.
-- **Director** (`actor:"director"`) — a persistent **world** beat, NOT a player key. Fired from the in-app **Director panel** ([`DirectorPanel.tsx`](../components/lingbot-world-2/DirectorPanel.tsx)) or its **alphabetic hotkey** — `DIRECTOR_HOTKEYS = "tyupfghbnvxz"`, the *i*-th director event → the *i*-th letter (letters chosen to avoid every player control). It's `assert`ed as a fact into the shared History and projected onto the player's prompt until cleared.
+- **Player** (`actor:"character"`, default) — a character action on a chip. `holdPress(slot)` adds it to `heldSlots`; `composePrompt` stacks its `detail` while held. Chips render for up to `MAX_EVENTS` (24) player events, but `keyToHoldSlot` only maps the **number keys 1–9** to slots 0–8 — author your most-used actions first so they get a hotkey, and remember the 10th+ event is click-only. Order matters: `EventChips.tsx` lists player events before director chips, so put player events first in the JSON `events[]` array.
+- **Director** (`actor:"environment"`) — a persistent **world** beat, NOT a player key. Fired from the in-app **Director panel** ([`DirectorPanel.tsx`](../components/lingbot-world-2/DirectorPanel.tsx)) or its **alphabetic hotkey** — `DIRECTOR_HOTKEYS = "tyupfghbnvxz"`, the *i*-th director event → the *i*-th letter (letters chosen to avoid every player control). It's `assert`ed as a fact into the shared History and projected onto the player's prompt until cleared.
 
 The **coordinator** ([`coordinator/coordinator.ts`](../coordinator/coordinator.ts), `ws://localhost:8090`) is the authoritative shared History + vitals, so a separate-browser Player and Director (or the **AI Director**, [`coordinator/director_nim.py`](../coordinator/director_nim.py)) agree. The `human` / `ai` / `both` switch gates which director's ops apply; player ops always apply. Both the player and the panel connect to it, so hotkey-fired director events land in the same History.
 
-Events may also carry a signed **`health`** delta (cost/reward) plus `addItem` / `removeItem`; these update the shared vitals and the [`Hud`](../components/lingbot-world-2/Hud.tsx) bar on scenes that declare a `hud` block. The `hud` block takes `show`, `maxHealth`, `health`, `inventory[]`, and an optional **`healthLabel`** (defaults to "Health") so a scene can rename the bar ("Hull", "Air", "Grip"). Authoring rules for scenes (player/director split, one fixed landmark, destroyed-things-vanish, visual-only) live in the `/add-game` skill.
+Events may also carry a signed **`health`** delta (cost/reward) plus `addItem` / `removeItem`; these update the shared vitals and the [`Hud`](../components/lingbot-world-2/Hud.tsx) bar on scenes that declare a `hud` block. The `hud` block takes `show`, `maxHealth`, `health`, `inventory[]`, and an optional **`healthLabel`** (defaults to "Health") so a scene can rename the bar ("Hull", "Air", "Grip"). Authoring rules for scenes (character/environment split, one fixed landmark, destroyed-things-vanish, visual-only) live in the `/add-game` skill.
 
 ### Event gating — `requires`
 
@@ -278,7 +278,7 @@ An event can be **conditional**: it only becomes available once the world reache
 ```jsonc
 {
   "name": "Enter the Door",
-  "actor": "player",
+  "actor": "character",
   "requires": { "fired": ["Exit Door Appears"], "minChunks": 8 },
   "detail": "…"
 }

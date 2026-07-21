@@ -1,6 +1,6 @@
 @echo off
 setlocal enableextensions
-REM Movement / locomotion-rig tests for the `movement-test` scene: third-person camera,
+REM Movement / locomotion-rig tests for the `test-movement` scene: third-person camera,
 REM jump/crouch/stand, idle-vs-moving locomotion, sprint + emote + swim actions, a
 REM director that adds cars, and a persistent low-gravity physics variant. Pure -- no
 REM VLM / coordinator / network, NOT billed.

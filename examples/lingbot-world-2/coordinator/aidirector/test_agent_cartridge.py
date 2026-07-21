@@ -1,4 +1,4 @@
-"""Agent / Game-Cartridge conformance tests for the `agent-test` scene.
+"""Agent / Game-Cartridge conformance tests for the `test-agent` scene.
 
 Encodes the principles from Alberto Hojel's "In Search for the World Model Harness
 for Gaming" (Roblox, May 2026) that this app's harness implements:
@@ -25,12 +25,12 @@ import sys
 from scene_probes import _slug, derive_probes
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SCENE_PATH = os.path.join(HERE, "..", "..", "lib", "lingbot-cases", "agent-test.json")
+SCENE_PATH = os.path.join(HERE, "..", "..", "lib", "lingbot-cases", "test-agent.json")
 GAME = json.load(open(SCENE_PATH, encoding="utf-8"))
 SCENE = GAME["scene"]
 EVENTS = SCENE["events"]
-DIRECTOR = [e for e in EVENTS if e.get("actor") == "director"]
-PLAYER = [e for e in EVENTS if e.get("actor", "player") == "player"]
+DIRECTOR = [e for e in EVENTS if e.get("actor") == "environment"]
+PLAYER = [e for e in EVENTS if e.get("actor", "character") == "character"]
 
 
 def _detail(e: dict) -> str:
@@ -51,9 +51,9 @@ def test_player_director_split() -> None:
     assert PLAYER, "no player-action events"
     assert DIRECTOR, "no director (world) events"
     for e in PLAYER:
-        assert e.get("actor", "player") == "player"
+        assert e.get("actor", "character") == "character"
     for e in DIRECTOR:
-        assert e.get("actor") == "director"
+        assert e.get("actor") == "environment"
 
 
 def test_prompt_invariance() -> None:

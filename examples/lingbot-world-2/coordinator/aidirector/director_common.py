@@ -140,7 +140,7 @@ def load_scene(path: str | None) -> dict[str, Any]:
     # the human sees). Each carries its authored clause + optional vitals.
     dir_events = []
     for e in scene.get("events", []):
-        if e.get("actor") != "director":
+        if e.get("actor") != "environment":
             continue
         det = e.get("detail")
         clause = det if isinstance(det, str) else (det or {}).get("static", "")

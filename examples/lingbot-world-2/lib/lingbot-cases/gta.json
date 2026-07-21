@@ -29,37 +29,37 @@
     "events": [
       {
         "name": "Car Accident",
-        "actor": "director",
+        "actor": "environment",
         "detail": "The man in the suit remains standing, unchanged in pose and position, while ahead on the boulevard a speeding car loses control, tyres screeching, and slams into another vehicle in a violent head-on collision — crumpling metal, shattering glass spraying across the asphalt, a burst of smoke and flying debris, the wrecked cars skidding to a halt in the middle of the road. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Draw Pistol",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man draws a black handgun from inside his suit jacket, extends both arms straight ahead of him, and fires down the sunny street; the muzzle flashes, the pistol recoils in his grip, and a spent casing spins onto the concrete before he lowers the weapon. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Punch Combo",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man snaps forward with a fast three-punch combination — jab, cross, then a heavy hook — his fists driving straight ahead, then he pulls his guard back up and settles. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Sprint",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man breaks into a hard sprint straight down the boulevard, arms pumping and briefcase swinging, shoes hammering the concrete, then eases back to a stop and straightens up. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Pick Up Cash",
-        "actor": "player",
+        "actor": "character",
         "detail": "The man drops into a quick crouch and snatches a scatter of loose dollar bills off the sidewalk ahead of him, stuffing them into his jacket, then rises smoothly back to his feet. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Police Arrive",
-        "actor": "director",
+        "actor": "environment",
         "detail": "Police cruisers race in with sirens wailing and red-and-blue lights flashing, screeching to a stop at angles across the boulevard as officers pile out and take positions; the parked cruisers and officers stay, blocking the street. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       },
       {
         "name": "Road Fire",
-        "actor": "director",
+        "actor": "environment",
         "detail": "The man in the suit remains standing, unchanged in pose and position, while flames erupt across the road ahead of him — a spreading blaze of orange fire and thick black smoke rising from the asphalt in the middle of the boulevard, heat rippling the air above the burning street. The main subject stays EXACTLY ONE in frame — a single main character, no second copy of the main subject, no duplicate and no clone of it."
       }
     ],

@@ -879,7 +879,7 @@ function EventCard({
   // so you can tell them apart while scrolling the list without reading the
   // toggle. Kept as a background tint (+ colored number badge) so it doesn't
   // fight the diff-state border above.
-  const isDirector = event.actor === "director";
+  const isDirector = event.actor === "environment";
   const actorTint = isDirector
     ? "bg-fuchsia-400/[0.05]"
     : "bg-emerald-400/[0.04]";
@@ -926,22 +926,22 @@ function EventCard({
         {/* PLAYER vs DIRECTOR: is this a hold-key the CHARACTER performs (player)
             or a persistent WORLD event the Human Director fires (director)? */}
         <div className="flex items-center overflow-hidden rounded border border-white/15 mono-xs">
-          {(["player", "director"] as const).map((a) => {
-            const on = (event.actor ?? "player") === a;
+          {(["character", "environment"] as const).map((a) => {
+            const on = (event.actor ?? "character") === a;
             return (
               <button
                 key={a}
                 type="button"
                 onClick={() => onChange({ ...event, actor: a })}
                 title={
-                  a === "director"
+                  a === "environment"
                     ? "Director action — a persistent WORLD event fired from the Human Director panel or its alphabetic hotkey (not a character move)"
                     : "Player action — a hold-key the CHARACTER performs (number key / WASD)"
                 }
                 className={cn(
                   "px-2 py-1 uppercase tracking-wide transition-colors",
                   on
-                    ? a === "director"
+                    ? a === "environment"
                       ? "bg-fuchsia-400/25 text-fuchsia-200"
                       : "bg-emerald-400/25 text-emerald-200"
                     : "text-white/35 hover:text-white/70",

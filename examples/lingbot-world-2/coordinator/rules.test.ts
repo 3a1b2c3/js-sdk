@@ -123,7 +123,7 @@ const JETSKI = JSON.parse(
   readFileSync(new URL("../lib/lingbot-cases/jet-ski-cruise.json", import.meta.url), "utf8"),
 );
 const JET_EVENTS = (JETSKI.scene.events as { actor?: string }[])
-  .filter((e) => e.actor === "director")
+  .filter((e) => e.actor === "environment")
   .map((e) => e as RuleEvent);
 
 test("real jet-ski scene: sequel/ending beats stay locked until their gate opens", async () => {

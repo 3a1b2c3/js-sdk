@@ -28,45 +28,45 @@
     "events": [
       {
         "name": "Kick Up Sparks",
-        "actor": "player",
+        "actor": "character",
         "detail": "The car crests a rise and the floor grounds out on the asphalt — a bright shower of orange sparks streams out from under the nose and sprays up past the halo and windscreen, trailing away behind, before the car settles back level on its suspension. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone."
       },
       {
         "name": "Drift",
-        "actor": "player",
+        "actor": "character",
         "detail": "The gloved hands throw the wheel hard over and the whole cockpit view slews sideways, the kerbs and barriers swinging across the windscreen as the rear steps out in a smoking slide, then the hands catch it and the view snaps back straight down the track. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone."
       },
       {
         "name": "Crash",
-        "actor": "player",
+        "actor": "character",
         "detail": "The view lurches violently as the car slams into the barrier ahead — the windscreen fills with flying carbon-fibre debris and spinning sky and track, the wheel wrenching in the gloved hands and the dash flashing red warnings, before it grinds to a juddering, shuddering halt. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone."
       },
       {
         "name": "Chicane Flick",
-        "actor": "player",
+        "actor": "character",
         "detail": "The gloved hands snap the wheel left then hard right and the cockpit whips through a tight chicane, the red-and-white kerbs and barriers flicking across the windscreen in a quick left-right S as the car darts through the esses, then straightens out down the track. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone."
       },
       {
         "name": "Lock-Up Smoke",
-        "actor": "player",
+        "actor": "character",
         "detail": "The driver stamps the brakes hard into the corner and the front tyres lock — thick white tyre smoke boils up off the wheels and plumes across the windscreen, the nose diving and the view juddering as the car slides toward the apex, before it hooks in and settles back level. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone.",
         "health": 5
       },
       {
         "name": "DRS Boost",
-        "actor": "player",
+        "actor": "character",
         "detail": "The gloved thumb flicks the DRS on the steering wheel and the dash lights up, and the view surges away down the straight as drag drops off — the track and barriers streaking faster past the halo and windscreen, then it eases as the wing closes. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Ride the Kerb",
-        "actor": "player",
+        "actor": "character",
         "detail": "The view drops onto the red-and-white kerb at the corner and the whole cockpit judders and rattles violently, the wheel shaking in the gloved hands and the horizon bouncing through the windscreen, before the car settles back onto the smooth asphalt. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone.",
         "health": -5
       },
       {
         "name": "Rain Sweeps In",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "notFired": [
             "Sun Glare",
@@ -78,19 +78,19 @@
       },
       {
         "name": "Rabbit on the Track",
-        "actor": "director",
+        "actor": "environment",
         "chance": 0.08,
         "detail": "A rabbit darts out onto the track ahead in the windscreen and stops in the racing line directly in the car's path, ears twitching, staying put on the tarmac as the view rushes toward it. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone."
       },
       {
         "name": "Road Fire",
-        "actor": "director",
+        "actor": "environment",
         "chance": 0.05,
         "detail": "EXACTLY ONE single wall of fire erupts across the track ahead in the windscreen — one lone wall of orange flames and black smoke rising off the tarmac and spanning the full width of the road directly in the car's path, no second fire and no other flames anywhere else; the view bears down on it and blasts through, and NO further fire appears after it, only the one, heat shimmering over the halo.",
         "count": 1
       },
       {
-        "actor": "director",
+        "actor": "environment",
         "name": "Puddle on the Track",
         "requires": {
           "fired": [
@@ -101,7 +101,7 @@
         "health": -5
       },
       {
-        "actor": "director",
+        "actor": "environment",
         "name": "Oil Slick Ahead",
         "requires": {
           "fired": [
@@ -112,13 +112,13 @@
         "health": -8
       },
       {
-        "actor": "director",
+        "actor": "environment",
         "name": "Tunnel Section",
         "detail": "The track ahead dives into a dark tunnel — the bright sky vanishes from the windscreen and the walls close in, strings of overhead lights strobing past over the halo, before the view bursts back out into open daylight. EXACTLY ONE of each thing shown — a single car on a single track and only one of any object described, no second car, no duplicate and no clone.",
         "health": 0
       },
       {
-        "actor": "director",
+        "actor": "environment",
         "name": "Sun Glare",
         "requires": {
           "notFired": [
@@ -132,7 +132,7 @@
       },
       {
         "name": "Clear Dry Track",
-        "actor": "director",
+        "actor": "environment",
         "requires": {
           "notFired": [
             "Rain Sweeps In",
@@ -144,7 +144,7 @@
       },
       {
         "name": "Checkered Flag",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "empty",
         "cameraVersion": "empty",
         "movementVersion": "empty",
@@ -158,7 +158,7 @@
       },
       {
         "name": "Crashed Out",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "empty",
         "cameraVersion": "empty",
         "movementVersion": "empty",

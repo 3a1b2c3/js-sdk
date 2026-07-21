@@ -1,6 +1,6 @@
 {
-  "id": "agent-test",
-  "name": "Agent Test Tools",
+  "id": "test-agent",
+  "name": "Test: Agent Tools",
   "description": "Game-Cartridge fixture (wheat harvest) — the equipped-tool + world-consequence sandbox from the Roblox world-model post. ALL tools are present in the scene from the start (scythe in hand, rifle + torch on the ground); most actions are NOT chained. Keys: 1 Cut Wheat (scythe), 2 Shoot Rifle, 3 Drop Rifle, 4 Pick Up Torch, 5 Torch the Wheat; Space jump, C crouch. Director: Night Falls, Wind Picks Up, Fire Spreads. Exercises decomposed World/Character/Actions/Dynamics conditioning, player-vs-director split, prompt invariance, and VLM visual triggers.",
   "objective": {
     "summary": "Work the field however you like, then burn it — harvest the wheat, cycle through the tools, put a torch to the dry stalks, and let the fire spread until the whole field is scorched to blackened stubble.",
@@ -15,7 +15,7 @@
     "reward": "Fire Spreads"
   },
   "image": {
-    "label": "Agent Test Tools",
+    "label": "Test: Agent Tools",
     "src": "/lingbot-cases/harvesting-golden-wheat-stockcake.jpg"
   },
   "scene": {
@@ -42,62 +42,62 @@
     "events": [
       {
         "name": "Do Nothing",
-        "actor": "player",
+        "actor": "character",
         "detail": "The farmer simply stands still among the wheat, holding the scythe and taking no action at all — just waiting in place as the golden wheat sways gently around them and chaff drifts in the warm light. EXACTLY ONE farmer holding EXACTLY ONE scythe — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Empty Hands",
-        "actor": "player",
+        "actor": "character",
         "detail": "The farmer sets down the tool they are holding onto the wheat stubble and stands empty-handed in the field, nothing in their grip, arms loose at their sides. EXACTLY ONE farmer — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Cut Wheat",
-        "actor": "player",
+        "actor": "character",
         "detail": "The farmer swings the long-handled scythe low in a broad sweep and cuts down a swath of golden wheat, the cut stalks toppling and falling away to leave fresh pale stubble and bare dirt where they stood — the cut wheat now GONE, only low stubble left behind. EXACTLY ONE farmer holding EXACTLY ONE scythe — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Shoot Rifle",
-        "actor": "player",
+        "actor": "character",
         "detail": "The farmer sets down the scythe, takes up the bolt-action rifle from the ground and raises it to their shoulder, then fires it across the wheat field — a bright muzzle flash and a puff of white smoke bursting from the barrel as the rifle kicks back against their shoulder. EXACTLY ONE farmer holding EXACTLY ONE rifle — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Drop Rifle",
-        "actor": "player",
+        "actor": "character",
         "requires": { "fired": ["Shoot Rifle"] },
         "detail": "The farmer lets go of the rifle and it drops straight down to the ground, landing in the stubble at their feet where it lies still; the farmer now stands empty-handed in the wheat field with nothing in their hands. EXACTLY ONE farmer — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Pick Up Torch",
-        "actor": "player",
+        "actor": "character",
         "detail": "The farmer takes up the flaming wooden torch from the ground, gripping it firmly and raising it high, holding the burning torch ready in one hand. EXACTLY ONE farmer holding EXACTLY ONE torch — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Torch the Wheat",
-        "actor": "player",
+        "actor": "character",
         "requires": { "fired": ["Pick Up Torch"] },
         "detail": "The farmer lowers the flaming torch to the dry golden wheat and sweeps it along the base of the stalks, setting a spreading line of wheat ablaze — flames catching and climbing up through the crop where the torch passes as the fire takes hold across the nearest rows. EXACTLY ONE farmer holding EXACTLY ONE torch — a single lone figure, no duplicate and no clone.",
         "health": 0
       },
       {
         "name": "Night Falls",
-        "actor": "director",
+        "actor": "environment",
         "baseVersion": "night",
         "detail": "Darkness sweeps across the wheat field as the sun finishes setting and the sky deepens to star-scattered night, a bright moon rising over the field and washing the golden wheat cool and silvery in the moonlight, the torch's flame now glowing bright in the dark. From then on the field STAYS in night — dark, moonlit and shadowed. The farmer stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around them changes."
       },
       {
         "name": "Wind Picks Up",
-        "actor": "director",
+        "actor": "environment",
         "detail": "A strong wind sweeps across the wheat field — the tall golden stalks bending and rippling in long waves as the gusts push through them, loose chaff and dust streaming sideways through the air and the whole field swaying hard one way in the wind. From then on the wind KEEPS blowing, the wheat bending and rippling across the field. The farmer stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around them changes."
       },
       {
         "name": "Fire Spreads",
-        "actor": "director",
+        "actor": "environment",
         "requires": { "fired": ["Torch the Wheat"] },
         "baseVersion": "burned",
         "detail": "The fire spreads through the wheat — flames consuming and charring the stalks across the whole field as the crop catches and burns down to blackened stubble, thick grey smoke billowing up around the farmer and the golden field left scorched and black. From then on the field STAYS burned: blackened, charred stubble and drifting smoke, the standing wheat GONE. The farmer stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around them changes.",
