@@ -1613,10 +1613,43 @@ export function LingbotWorldController({ className }: { className?: string }) {
   // Manual model connect + start — the ONLY path that touches the model backend for a
   // scene. Uploads the pending image, sends the prompt, then starts generation. Runs
   // only when the user clicks Start; never automatically.
+  // One start at a time. The async image upload leaves a window in which the
+  // pending-start effect and repeat Start clicks re-enter connectAndStart, each
+  // re-uploading the 6.9 MB image on the same session — the "start storm".
+  const startInFlightRef = useRef(false);
   const connectAndStart = useCallback(async () => {
     const pending = pendingStartRef.current;
     console.log("[start] Start clicked → connectAndStart; pending =",
       pending ? { imageKind: pending.image.kind, promptChars: pending.prompt.length } : "NULL (no game loaded?)");
+    // Gate on a live session. Firing set_image/set_prompt/start while the model is
+    // "disconnected" just bounces every command with NOT_READY — and because those
+    // errors are recoverable the SDK swallows them, so the old path silently looped
+    // (re-uploading the image each retry) while still logging a false "start ok".
+    // Leave pendingStartRef set so the isReady effect below auto-replays the start the
+    // moment the session actually connects.
+    if (!isReady) {
+      console.warn("[start] session not ready — click Connect first; deferring start until connected");
+      setErrorToast("Not connected — click Connect, then press Start.");
+      return;
+    }
+    // Fail loudly on anything missing instead of starting a blank/partial session.
+    if (!pending) {
+      console.error("[start] no pending game — nothing to start");
+      setErrorToast("No game loaded — pick a game, then press Start.");
+      return;
+    }
+    if (!pending.prompt?.trim()) {
+      console.error("[start] pending game has no prompt");
+      setErrorToast("This game has no prompt — can't start.");
+      return;
+    }
+    // Re-entrancy guard: swallow duplicate triggers while a start is mid-flight so
+    // one Start doesn't fan out into dozens of concurrent uploads on the session.
+    if (startInFlightRef.current) {
+      console.warn("[start] a start is already in flight — ignoring duplicate trigger");
+      return;
+    }
+    startInFlightRef.current = true;
     try {
       if (pending) {
         if (pending.image.kind === "url") {
@@ -1658,9 +1691,11 @@ export function LingbotWorldController({ className }: { className?: string }) {
       } catch (e) {
         console.error("[start] disconnect after failure also failed:", e);
       }
+    } finally {
+      startInFlightRef.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadFile]);
+  }, [uploadFile, isReady]);
 
   // Keep the ref pointing at the latest connectAndStart, and auto-play a scene that was
   // picked while disconnected as soon as the session reaches ready.

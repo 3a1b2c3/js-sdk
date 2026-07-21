@@ -142,7 +142,8 @@
       {
         "name": "Palm Tree Falls Over",
         "actor": "environment",
-        "detail": "EXACTLY ONE of the tall palm trees in the row on the right topples and crashes over — its trunk cracking and the whole palm leaning, then falling, its fronds sweeping down as it comes crashing to the ground across the sidewalk on the right, kicking up a burst of dust where it lands. From then on that palm tree STAYS down, fallen across the pavement on the right. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
+        "count": 1,
+        "detail": "EXACTLY ONE of the tall palm trees in the row on the right topples and crashes over — its trunk cracking and the whole palm leaning, then falling, its fronds sweeping down as it comes crashing to the ground across the sidewalk on the right, kicking up a burst of dust where it lands. Only ONE palm falls, and it falls only this once — it does not rise back up, reset, or fall again, and no second palm topples: a single fallen palm, no duplicate and no clone. From then on that palm tree STAYS down, fallen across the pavement on the right. The man stays EXACTLY ONE in frame, unchanged in pose and appearance; only the world around him changes."
       },
       {
         "name": "Gravity Weakens",
