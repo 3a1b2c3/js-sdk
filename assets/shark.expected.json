@@ -1,7 +1,7 @@
 {
   "_comment": "Ground-truth probe expectations for shark.jpg on the jet-ski-cruise scene. Paths relative to this file (assets/). NOTE: shark_appears is expected TRUE (a shark fin IS in the frame) but the small/soft fin can read as a dolphin on the 12B VLM, so this assertion documents a KNOWN false negative — it may FAIL until a clearer frame or stronger model. subject_out_of_frame + duplicate_subject are the general must-stay-clean invariants (any subject scene). submerged is scene-SPECIFIC — it only derives on water/vehicle scenes whose identity text has 'never sink'/'underwater' markers, so it applies here but is not a universal check.",
   "image": "shark.jpg",
-  "scene": "../examples/lingbot-world-2/lib/lingbot-cases/jet-ski-cruise.json",
+  "scene": "../lib/lingbot-cases/jet-ski-cruise.json",
   "expect_true": [
     "shark_appears"
   ],

@@ -2,6 +2,10 @@ node_modules/
 dist/
 .next/
 
+# Python bytecode / caches — never track anywhere in the tree.
+__pycache__/
+*.pyc
+
 # Never commit local environment files anywhere in the tree. The only
 # exception is the `.env.example` templates committed alongside packages.
 **/.env
