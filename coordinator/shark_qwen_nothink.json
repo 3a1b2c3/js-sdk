@@ -1,0 +1,164 @@
+{
+  "scene": "C:\\workspace\\world\\REACTOR_js-sdk\\assets\\../examples/lingbot-world-2/lib/lingbot-cases/jet-ski-cruise.json",
+  "image": "C:\\workspace\\world\\REACTOR_js-sdk\\assets\\shark.jpg",
+  "model": "nvidia/qwen/qwen3-5-397b-a17b",
+  "probe_count": 26,
+  "probes": [
+    {
+      "id": "state_overboard",
+      "q": "Is the scene in the 'overboard' state — A man in a red life vest floundering in the turquoise water after bein",
+      "observe": "state:overboard"
+    },
+    {
+      "id": "submerged",
+      "q": "Is the main subject or its vehicle submerged, sinking, or underwater?",
+      "onTrue": {
+        "op": "assert",
+        "key": "fix:submerged",
+        "clause": "The subject stays up on the surface of the water, riding on top — not submerged or underwater."
+      },
+      "observe": "submerged"
+    },
+    {
+      "id": "duplicate_subject",
+      "q": "Is there more than one of the main subject — a duplicate, clone, or second copy?",
+      "onTrue": {
+        "op": "assert",
+        "key": "fix:duplicate_subject",
+        "clause": "There is EXACTLY ONE main subject in frame — a single character, no duplicate and no clone."
+      },
+      "observe": "duplicate_subject"
+    },
+    {
+      "id": "subject_out_of_frame",
+      "q": "Is the main subject missing, off-screen, or not clearly visible?",
+      "onTrue": {
+        "op": "assert",
+        "key": "fix:subject_out_of_frame",
+        "clause": "The main subject is re-centred in frame, clearly in view."
+      },
+      "observe": "subject_out_of_frame"
+    },
+    {
+      "id": "shark_appears",
+      "q": "Is this visible in the frame now: A single tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff tria",
+      "observe": "shark_appears"
+    },
+    {
+      "id": "shark_lunges",
+      "q": "Is this visible in the frame now: The tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff triangula",
+      "observe": "shark_lunges"
+    },
+    {
+      "id": "dolphins_leap_alongside",
+      "q": "Is this visible in the frame now: A pod of sleek dolphins surfaces and leaps in formation alongside the jet ski, arcing out ",
+      "observe": "dolphins_leap_alongside"
+    },
+    {
+      "id": "storm_rolls_in",
+      "q": "Is this visible in the frame now: The sky darkens as heavy storm clouds roll across the sun, the wind whips up, and the calm",
+      "observe": "storm_rolls_in"
+    },
+    {
+      "id": "waterspout_forms",
+      "q": "Is this visible in the frame now: A towering waterspout twists up from the sea on the horizon ahead — a swirling column of w",
+      "observe": "waterspout_forms"
+    },
+    {
+      "id": "whale_breaches",
+      "q": "Is this visible in the frame now: The rider on the jet ski remains the main subject, unchanged, while off to one side a mass",
+      "observe": "whale_breaches"
+    },
+    {
+      "id": "bioluminescent_night",
+      "q": "Is this visible in the frame now: The scene sweeps into night: the sky deepens to star-scattered black and the water turns d",
+      "observe": "bioluminescent_night"
+    },
+    {
+      "id": "volcanic_island_erupts",
+      "q": "Is this visible in the frame now: The distant rocky outcrop on the horizon erupts into a volcano — glowing orange lava strea",
+      "observe": "volcanic_island_erupts"
+    },
+    {
+      "id": "rogue_wave",
+      "q": "Is this visible in the frame now: A towering rogue wave rears up ahead — a steep wall of dark water rising far above the jet",
+      "observe": "rogue_wave"
+    },
+    {
+      "id": "thrown_from_the_jet_ski",
+      "q": "Is this visible in the frame now: The jet ski hits a wave and bucks hard and the rider is thrown clean off, flung sideways o",
+      "observe": "thrown_from_the_jet_ski"
+    },
+    {
+      "id": "doing_rides_with_torch",
+      "q": "Is the main character performing this action right now: The rider raises a burning torch high overhead in one hand, its orange flame streaming and",
+      "observe": "doing_rides_with_torch"
+    },
+    {
+      "id": "doing_jump_the_wake",
+      "q": "Is the main character performing this action right now: The rider guns the throttle up the face of a swell and launches the jet ski clean off the ",
+      "observe": "doing_jump_the_wake"
+    },
+    {
+      "id": "doing_spin_360",
+      "q": "Is the main character performing this action right now: The rider whips the jet ski into a tight spinning 360, the hull skating around and sweepin",
+      "observe": "doing_spin_360"
+    },
+    {
+      "id": "doing_barrel_roll",
+      "q": "Is the main character performing this action right now: The rider launches the jet ski off a wave and rolls it fully over in mid-air, a complete b",
+      "observe": "doing_barrel_roll"
+    },
+    {
+      "id": "doing_cut_the_engine",
+      "q": "Is the main character performing this action right now: The rider throttles down and coasts to a gentle stop, the jet ski bobbing on the swell wit",
+      "observe": "doing_cut_the_engine"
+    },
+    {
+      "id": "doing_wave_to_shore",
+      "q": "Is the main character performing this action right now: The rider lifts one hand off the handlebar and waves toward the palm-lined beach as the je",
+      "observe": "doing_wave_to_shore"
+    },
+    {
+      "id": "doing_backflip",
+      "q": "Is the main character performing this action right now: The rider hauls back hard off the crest of a wave and the jet ski whips into a full backfl",
+      "observe": "doing_backflip"
+    },
+    {
+      "id": "doing_nose_pop",
+      "q": "Is the main character performing this action right now: The rider yanks the handlebars back and pops the nose of the jet ski high into the air, ri",
+      "observe": "doing_nose_pop"
+    },
+    {
+      "id": "doing_slalom_weave",
+      "q": "Is the main character performing this action right now: The rider snaps the jet ski into a fast slalom, weaving sharply left and right through the",
+      "observe": "doing_slalom_weave"
+    },
+    {
+      "id": "doing_superman",
+      "q": "Is the main character performing this action right now: The rider stretches out flat off the back of the jet ski in a superman trick, gripping the",
+      "observe": "doing_superman"
+    },
+    {
+      "id": "doing_jump_off",
+      "q": "Is the main character performing this action right now: The rider stands up and leaps clean off the jet ski, splashing down into the turquoise wat",
+      "observe": "doing_jump_off"
+    },
+    {
+      "id": "doing_jump_back_on",
+      "q": "Is the main character performing this action right now: The rider swims the last stroke to the drifting jet ski, grabs the handlebars and hauls hi",
+      "observe": "doing_jump_back_on"
+    }
+  ],
+  "system": "You are a visual state checker. Answer each question true or false about the image. Respond with ONLY a JSON object mapping each id to true or false.",
+  "user_text": "Answer each of these yes/no questions about the image. Respond with ONLY a JSON object mapping each id to true or false.\n\n- state_overboard: Is the scene in the 'overboard' state — A man in a red life vest floundering in the turquoise water after bein\n- submerged: Is the main subject or its vehicle submerged, sinking, or underwater?\n- duplicate_subject: Is there more than one of the main subject — a duplicate, clone, or second copy?\n- subject_out_of_frame: Is the main subject missing, off-screen, or not clearly visible?\n- shark_appears: Is this visible in the frame now: A single tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff tria\n- shark_lunges: Is this visible in the frame now: The tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff triangula\n- dolphins_leap_alongside: Is this visible in the frame now: A pod of sleek dolphins surfaces and leaps in formation alongside the jet ski, arcing out \n- storm_rolls_in: Is this visible in the frame now: The sky darkens as heavy storm clouds roll across the sun, the wind whips up, and the calm\n- waterspout_forms: Is this visible in the frame now: A towering waterspout twists up from the sea on the horizon ahead — a swirling column of w\n- whale_breaches: Is this visible in the frame now: The rider on the jet ski remains the main subject, unchanged, while off to one side a mass\n- bioluminescent_night: Is this visible in the frame now: The scene sweeps into night: the sky deepens to star-scattered black and the water turns d\n- volcanic_island_erupts: Is this visible in the frame now: The distant rocky outcrop on the horizon erupts into a volcano — glowing orange lava strea\n- rogue_wave: Is this visible in the frame now: A towering rogue wave rears up ahead — a steep wall of dark water rising far above the jet\n- thrown_from_the_jet_ski: Is this visible in the frame now: The jet ski hits a wave and bucks hard and the rider is thrown clean off, flung sideways o\n- doing_rides_with_torch: Is the main character performing this action right now: The rider raises a burning torch high overhead in one hand, its orange flame streaming and\n- doing_jump_the_wake: Is the main character performing this action right now: The rider guns the throttle up the face of a swell and launches the jet ski clean off the \n- doing_spin_360: Is the main character performing this action right now: The rider whips the jet ski into a tight spinning 360, the hull skating around and sweepin\n- doing_barrel_roll: Is the main character performing this action right now: The rider launches the jet ski off a wave and rolls it fully over in mid-air, a complete b\n- doing_cut_the_engine: Is the main character performing this action right now: The rider throttles down and coasts to a gentle stop, the jet ski bobbing on the swell wit\n- doing_wave_to_shore: Is the main character performing this action right now: The rider lifts one hand off the handlebar and waves toward the palm-lined beach as the je\n- doing_backflip: Is the main character performing this action right now: The rider hauls back hard off the crest of a wave and the jet ski whips into a full backfl\n- doing_nose_pop: Is the main character performing this action right now: The rider yanks the handlebars back and pops the nose of the jet ski high into the air, ri\n- doing_slalom_weave: Is the main character performing this action right now: The rider snaps the jet ski into a fast slalom, weaving sharply left and right through the\n- doing_superman: Is the main character performing this action right now: The rider stretches out flat off the back of the jet ski in a superman trick, gripping the\n- doing_jump_off: Is the main character performing this action right now: The rider stands up and leaps clean off the jet ski, splashing down into the turquoise wat\n- doing_jump_back_on: Is the main character performing this action right now: The rider swims the last stroke to the drifting jet ski, grabs the handlebars and hauls hi\n\n/no_think",
+  "raw_reply": "",
+  "answers": {},
+  "observations": {},
+  "ops": [],
+  "elapsed_s": 61.66,
+  "tokens": {
+    "prompt": 1155,
+    "completion": 512
+  }
+}

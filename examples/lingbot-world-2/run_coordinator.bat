@@ -14,7 +14,7 @@ REM   - Director panel: set "coordinator ws" = ws://localhost:8090
 REM COORDINATOR_PORT overrides 8090.
 REM ==========================================================================
 set "HERE=%~dp0"
-set "COORD=%HERE%coordinator"
+set "COORD=%HERE%..\..\coordinator"
 if not defined COORDINATOR_PORT set "COORDINATOR_PORT=8090"
 
 where node >nul 2>&1

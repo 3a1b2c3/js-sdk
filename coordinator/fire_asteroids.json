@@ -1,0 +1,157 @@
+{
+  "scene": "../lib/lingbot-cases/asteroids.json",
+  "image": "../../../assets/fire.jpg",
+  "model": "nvidia/nvidia/nemotron-nano-12b-v2-vl",
+  "probe_count": 18,
+  "probes": [
+    {
+      "id": "duplicate_subject",
+      "q": "Is there more than one of the main subject — a duplicate, clone, or second copy?",
+      "onTrue": {
+        "op": "assert",
+        "key": "fix:duplicate_subject",
+        "clause": "There is EXACTLY ONE main subject in frame — a single character, no duplicate and no clone."
+      },
+      "observe": "duplicate_subject"
+    },
+    {
+      "id": "subject_out_of_frame",
+      "q": "Is the main subject missing, off-screen, or not clearly visible?",
+      "onTrue": {
+        "op": "assert",
+        "key": "fix:subject_out_of_frame",
+        "clause": "The main subject is re-centred in frame, clearly in view."
+      },
+      "observe": "subject_out_of_frame"
+    },
+    {
+      "id": "ufo_appears",
+      "q": "Is this visible in the frame now: A sleek alien UFO — a smooth metallic saucer ringed with pulsing green and violet lights —",
+      "observe": "ufo_appears"
+    },
+    {
+      "id": "planet_appears",
+      "q": "Is this visible in the frame now: A large planet swings into view ahead in space, its curved horizon and banded surface risi",
+      "observe": "planet_appears"
+    },
+    {
+      "id": "enemy_fighter_attacks",
+      "q": "Is this visible in the frame now: A single hostile alien fighter — a lean dart-shaped craft with glowing red engine slits — ",
+      "observe": "enemy_fighter_attacks"
+    },
+    {
+      "id": "asteroid_storm",
+      "q": "Is this visible in the frame now: A dense surge of tumbling pale-grey asteroids sweeps in across the whole field, the rocks ",
+      "observe": "asteroid_storm"
+    },
+    {
+      "id": "solar_flare",
+      "q": "Is this visible in the frame now: The distant bright star on the right erupts in a blinding solar flare, a searing wave of w",
+      "observe": "solar_flare"
+    },
+    {
+      "id": "wormhole_opens",
+      "q": "Is this visible in the frame now: A swirling blue-violet wormhole tears open in the starfield straight ahead, a churning spi",
+      "observe": "wormhole_opens"
+    },
+    {
+      "id": "comet_streaks_by",
+      "q": "Is this visible in the frame now: A single brilliant comet blazes across the starfield, a bright icy nucleus trailing a long",
+      "observe": "comet_streaks_by"
+    },
+    {
+      "id": "repair_beacon_appears",
+      "q": "Is this visible in the frame now: A friendly repair beacon — a compact drone-buoy pulsing with steady green light and ringed",
+      "observe": "repair_beacon_appears"
+    },
+    {
+      "id": "doing_fire_cannons",
+      "q": "Is the main character performing this action right now: The ship's forward laser cannons open fire straight ahead, spitting rapid bright blue ener",
+      "observe": "doing_fire_cannons"
+    },
+    {
+      "id": "doing_launch_missiles",
+      "q": "Is the main character performing this action right now: A single missile blasts from the ship's underwing hardpoint and streaks ahead down the fie",
+      "observe": "doing_launch_missiles"
+    },
+    {
+      "id": "doing_afterburner_boost",
+      "q": "Is the main character performing this action right now: The ship's blue thrusters flare into a brilliant white-hot afterburner and the ship surges",
+      "observe": "doing_afterburner_boost"
+    },
+    {
+      "id": "doing_barrel_roll",
+      "q": "Is the main character performing this action right now: The ship snaps into a fast barrel roll, rotating cleanly around its own axis to dodge, its",
+      "observe": "doing_barrel_roll"
+    },
+    {
+      "id": "doing_deploy_shield",
+      "q": "Is the main character performing this action right now: A translucent hexagonal energy shield flickers to life and wraps around the ship in a glow",
+      "observe": "doing_deploy_shield"
+    },
+    {
+      "id": "doing_shatter_asteroid",
+      "q": "Is the main character performing this action right now: The ship locks onto the large spire-shaped asteroid straight ahead and unleashes a concent",
+      "observe": "doing_shatter_asteroid"
+    },
+    {
+      "id": "doing_turbo_boost",
+      "q": "Is the main character performing this action right now: The ship slams into full overdrive — every engine igniting into a massive white-blue plume",
+      "observe": "doing_turbo_boost"
+    },
+    {
+      "id": "doing_land_on_planet",
+      "q": "Is the main character performing this action right now: The ship descends toward a nearby planet, dropping through its upper atmosphere as the cur",
+      "observe": "doing_land_on_planet"
+    }
+  ],
+  "system": "You are a visual state checker. Answer each question true or false about the image. Respond with ONLY a JSON object mapping each id to true or false.",
+  "user_text": "Answer each of these yes/no questions about the image. Respond with ONLY a JSON object mapping each id to true or false.\n\n- duplicate_subject: Is there more than one of the main subject — a duplicate, clone, or second copy?\n- subject_out_of_frame: Is the main subject missing, off-screen, or not clearly visible?\n- ufo_appears: Is this visible in the frame now: A sleek alien UFO — a smooth metallic saucer ringed with pulsing green and violet lights —\n- planet_appears: Is this visible in the frame now: A large planet swings into view ahead in space, its curved horizon and banded surface risi\n- enemy_fighter_attacks: Is this visible in the frame now: A single hostile alien fighter — a lean dart-shaped craft with glowing red engine slits — \n- asteroid_storm: Is this visible in the frame now: A dense surge of tumbling pale-grey asteroids sweeps in across the whole field, the rocks \n- solar_flare: Is this visible in the frame now: The distant bright star on the right erupts in a blinding solar flare, a searing wave of w\n- wormhole_opens: Is this visible in the frame now: A swirling blue-violet wormhole tears open in the starfield straight ahead, a churning spi\n- comet_streaks_by: Is this visible in the frame now: A single brilliant comet blazes across the starfield, a bright icy nucleus trailing a long\n- repair_beacon_appears: Is this visible in the frame now: A friendly repair beacon — a compact drone-buoy pulsing with steady green light and ringed\n- doing_fire_cannons: Is the main character performing this action right now: The ship's forward laser cannons open fire straight ahead, spitting rapid bright blue ener\n- doing_launch_missiles: Is the main character performing this action right now: A single missile blasts from the ship's underwing hardpoint and streaks ahead down the fie\n- doing_afterburner_boost: Is the main character performing this action right now: The ship's blue thrusters flare into a brilliant white-hot afterburner and the ship surges\n- doing_barrel_roll: Is the main character performing this action right now: The ship snaps into a fast barrel roll, rotating cleanly around its own axis to dodge, its\n- doing_deploy_shield: Is the main character performing this action right now: A translucent hexagonal energy shield flickers to life and wraps around the ship in a glow\n- doing_shatter_asteroid: Is the main character performing this action right now: The ship locks onto the large spire-shaped asteroid straight ahead and unleashes a concent\n- doing_turbo_boost: Is the main character performing this action right now: The ship slams into full overdrive — every engine igniting into a massive white-blue plume\n- doing_land_on_planet: Is the main character performing this action right now: The ship descends toward a nearby planet, dropping through its upper atmosphere as the cur",
+  "raw_reply": "```json\n{\n  \"duplicate_subject\": false,\n  \"subject_out_of_frame\": false,\n  \"ufo_appears\": false,\n  \"planet_appears\": true,\n  \"enemy_fighter_attacks\": false,\n  \"asteroid_storm\": false,\n  \"solar_flare\": false,\n  \"wormhole_opens\": false,\n  \"comet_streaks_by\": false,\n  \"repair_beacon_appears\": false,\n  \"doing_fire_cannons\": true,\n  \"doing_launch_missiles\": false,\n  \"doing_afterburner_boost\": false,\n  \"doing_barrel_roll\": false,\n  \"doing_deploy_shield\": false,\n  \"doing_shatter_asteroid\": false,\n  \"doing_turbo_boost\": false,\n  \"doing_land_on_planet\": false\n}\n```",
+  "answers": {
+    "duplicate_subject": false,
+    "subject_out_of_frame": false,
+    "ufo_appears": false,
+    "planet_appears": true,
+    "enemy_fighter_attacks": false,
+    "asteroid_storm": false,
+    "solar_flare": false,
+    "wormhole_opens": false,
+    "comet_streaks_by": false,
+    "repair_beacon_appears": false,
+    "doing_fire_cannons": true,
+    "doing_launch_missiles": false,
+    "doing_afterburner_boost": false,
+    "doing_barrel_roll": false,
+    "doing_deploy_shield": false,
+    "doing_shatter_asteroid": false,
+    "doing_turbo_boost": false,
+    "doing_land_on_planet": false
+  },
+  "observations": {
+    "duplicate_subject": false,
+    "subject_out_of_frame": false,
+    "ufo_appears": false,
+    "planet_appears": true,
+    "enemy_fighter_attacks": false,
+    "asteroid_storm": false,
+    "solar_flare": false,
+    "wormhole_opens": false,
+    "comet_streaks_by": false,
+    "repair_beacon_appears": false,
+    "doing_fire_cannons": true,
+    "doing_launch_missiles": false,
+    "doing_afterburner_boost": false,
+    "doing_barrel_roll": false,
+    "doing_deploy_shield": false,
+    "doing_shatter_asteroid": false,
+    "doing_turbo_boost": false,
+    "doing_land_on_planet": false
+  },
+  "ops": [],
+  "elapsed_s": 5.79,
+  "tokens": {
+    "prompt": 2494,
+    "completion": 198
+  }
+}

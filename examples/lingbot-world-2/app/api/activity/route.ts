@@ -9,7 +9,8 @@ import path from "node:path";
 export const dynamic = "force-dynamic"; // never cache; always read the live file
 
 export async function GET() {
-  const file = path.join(process.cwd(), "coordinator", "activity.log");
+  // coordinator/ lives at the SDK root now (../../coordinator from this app).
+  const file = path.join(process.cwd(), "..", "..", "coordinator", "activity.log");
   try {
     const txt = await readFile(file, "utf-8");
     const lines = txt.split("\n").map((l) => l.trim()).filter(Boolean).slice(-60);

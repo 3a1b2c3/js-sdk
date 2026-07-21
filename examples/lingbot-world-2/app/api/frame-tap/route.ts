@@ -17,7 +17,8 @@ export const runtime = "nodejs"; // needs fs; not edge
 function framePath(): string {
   return (
     process.env.LINGBOT_FRAME_TAP ||
-    path.join(process.cwd(), "coordinator", "frame.png")
+    // coordinator/ lives at the SDK root now (../../coordinator from this app).
+    path.join(process.cwd(), "..", "..", "coordinator", "frame.png")
   );
 }
 

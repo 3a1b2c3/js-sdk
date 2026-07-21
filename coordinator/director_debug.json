@@ -1,0 +1,30 @@
+{
+  "scene": "../lib/lingbot-cases/templerun.json",
+  "image": "../public/lingbot-cases/templerun.jpg",
+  "model": "nvidia/nvidia/cosmos3-nano-reasoner",
+  "state": {
+    "facts": "(none)",
+    "health": 100,
+    "fired": [
+      "Gold Coin Appears"
+    ],
+    "step": 1
+  },
+  "system": "You are the DIRECTOR of a real-time interactive world. A video model renders the world; you steer it by triggering pre-authored events at the right moments.\n\nTHE WORLD (identity — never contradict this):\nA lone explorer seen from behind — a young adventurer in a torn off-white shirt, brown trousers and boots, arms out for balance — on a narrow ancient stone temple path of mossy cracked flagstones, a single huge snarling demonic ape monster looming in the misty jungle ruins behind him. The world contains EXACTLY ONE explorer at the centre of the frame at a fixed position AND EXACTLY ONE demonic ape monster behind in the background at a fixed position AND EXACTLY ONE row of carved stone guardian statues lining the path ahead at a fixed position. Overgrown jungle-temple ruins draped in vines and moss, crumbling walls and carved idols, deep water far below on either side of the narrow bridge, a trail of glowing golden diamond coins floating down the centre of the path, shafts of green sunlight through the canopy. Temple Run video-game look, vivid saturated colours, third-person over-the-shoulder running-game framing, photorealistic. EXACTLY ONE explorer and EXACTLY ONE ape monster, no duplicate and no clone.\n\nOBJECTIVE — build the world toward this over time, don't just react frame-by-frame:\nHunt the runner and escalate the danger over time: start with the lone Demon Ape Charges to build pressure, then bring the Enemy Horde Floods In as he speeds up, and interleave hazards (Fire Trap, Rockslide, Statue Awakens, Bridge Collapses) so the threat keeps rising. Space out coin rewards (Coin Rush, Gold Coin Appears) between the danger. Don't repeat the same event back-to-back.\n\nYou have already fired these events this session (build ON them; don't just repeat):\nGold Coin Appears\nElapsed: 1 chunks.\n\nYou may ONLY trigger events from this list — the SAME set the human director has.\nDo NOT invent new events or write your own prose:\n- \"Demon Ape Charges\": the single giant demonic ape monster surges closer, smashing through the ruins and gaining on him, jaws gaping wide in a snarl, it\n- \"Enemy Horde Floods In\": a snarling horde of dark demonic ape monsters pours out of the temple ruins and swarms the whole path, filling the frame from edge\n- \"Bridge Collapses\": the ancient stone bridge begins to collapse, flagstones crumbling and falling away into the deep water far below just behind him, \n- \"Fire Trap\": a row of flame jets erupts from the temple path, spouts of orange fire blasting up between the flagstones directly in his way, fla\n- \"Statue Awakens\": one of the carved stone guardian statues lining the path grinds and cracks to life, its stone head turning and a heavy stone arm s\n- \"Coin Rush\": a dense glittering stream of golden diamond coins floods the path, a long winding river of spinning gold coins hovering along the \n- \"Rockslide\": a rockslide tumbles across the temple path, a cascade of mossy boulders and rubble crashing down from the ruined walls and bouncin\n\nRULES:\n- Trigger an event only when it is PLAUSIBLE and fitting given what is visible in the frame and the objective.\n- If the Current world facts or Verified observations show an event is ALREADY in progress, do NOT\n  fire it again or stack a competing one — return an empty list and let the current event play out.\n- Choose 0-2 events. An empty list is correct when nothing should change yet.\n\nRespond with ONLY a JSON object, no prose:\n{\"events\": [\"<exact event name from the list>\"]}\n\nCurrent world facts: (none)\nVerified observations (from probes — what is ACTUALLY on screen now; trust these over your own read): (no probe read yet)\nCurrent health: 100",
+  "raw_reply": "{\"events\": [\"Demon Ape Charges\", \"Coin Rush\"]}",
+  "parsed": {
+    "events": [
+      "Demon Ape Charges",
+      "Coin Rush"
+    ]
+  },
+  "fired": [
+    "Demon Ape Charges",
+    "Coin Rush"
+  ],
+  "elapsed_s": 2.36,
+  "tokens": {
+    "prompt": 1156,
+    "completion": 14
+  }
+}

@@ -1,0 +1,258 @@
+{
+  "scene": "../lib/lingbot-cases/jet-ski-cruise.json",
+  "image": "../../../assets/shark.jpg",
+  "model": "nvidia/nvidia/cosmos3-nano-reasoner",
+  "probe_count": 23,
+  "probes": [
+    {
+      "id": "calm_open_water",
+      "q": "Is this visible in the frame now: The open sea stretches out ahead calm and clear, the turquoise water glassy and undisturbe",
+      "observe": "calm_open_water",
+      "requires": {
+        "notFired": [
+          "Shark Appears",
+          "Dolphins Leap Alongside",
+          "Whale Breaches"
+        ]
+      }
+    },
+    {
+      "id": "shark_appears",
+      "q": "Is this visible in the frame now: A single tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff tria",
+      "observe": "shark_appears",
+      "requires": {
+        "notFired": [
+          "Dolphins Leap Alongside",
+          "Whale Breaches",
+          "Calm Open Water"
+        ]
+      }
+    },
+    {
+      "id": "shark_lunges",
+      "q": "Is this visible in the frame now: The tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff triangula",
+      "observe": "shark_lunges",
+      "requires": {
+        "fired": [
+          "Shark Appears"
+        ]
+      }
+    },
+    {
+      "id": "dolphins_leap_alongside",
+      "q": "Is this visible in the frame now: A pod of sleek dolphins surfaces and leaps in formation alongside the jet ski, arcing out ",
+      "observe": "dolphins_leap_alongside",
+      "requires": {
+        "notFired": [
+          "Shark Appears",
+          "Whale Breaches",
+          "Calm Open Water"
+        ]
+      }
+    },
+    {
+      "id": "storm_rolls_in",
+      "q": "Is this visible in the frame now: The sky darkens as heavy storm clouds roll across the sun, the wind whips up, and the calm",
+      "observe": "storm_rolls_in",
+      "requires": null
+    },
+    {
+      "id": "waterspout_forms",
+      "q": "Is this visible in the frame now: A towering waterspout twists up from the sea on the horizon ahead — a swirling column of w",
+      "observe": "waterspout_forms",
+      "requires": null
+    },
+    {
+      "id": "whale_breaches",
+      "q": "Is this visible in the frame now: The rider on the jet ski remains the main subject, unchanged, while off to one side EXACTL",
+      "observe": "whale_breaches",
+      "requires": {
+        "notFired": [
+          "Shark Appears",
+          "Dolphins Leap Alongside",
+          "Calm Open Water"
+        ]
+      }
+    },
+    {
+      "id": "island_appears",
+      "q": "Is this visible in the frame now: A rocky island rises into view on the horizon ahead — a single dark craggy outcrop of ston",
+      "observe": "island_appears",
+      "requires": null
+    },
+    {
+      "id": "sea_turtle",
+      "q": "Is this visible in the frame now: A single large green sea turtle glides gently through the clear turquoise water just ahead",
+      "observe": "sea_turtle",
+      "requires": null
+    },
+    {
+      "id": "volcanic_island_erupts",
+      "q": "Is this visible in the frame now: The distant rocky outcrop on the horizon erupts into a volcano — glowing orange lava strea",
+      "observe": "volcanic_island_erupts",
+      "requires": {
+        "fired": [
+          "Island Appears"
+        ]
+      }
+    },
+    {
+      "id": "rogue_wave",
+      "q": "Is this visible in the frame now: A towering rogue wave rears up ahead — a steep wall of dark water rising far above the jet",
+      "observe": "rogue_wave",
+      "requires": null
+    },
+    {
+      "id": "fuel_runs_low",
+      "q": "Is this visible in the frame now: The jet ski's engine begins to strain and sputter as the fuel runs low — the motor coughin",
+      "observe": "fuel_runs_low",
+      "requires": {
+        "minChunks": 40
+      }
+    },
+    {
+      "id": "thrown_from_the_jet_ski",
+      "q": "Is this visible in the frame now: The jet ski hits a wave and bucks hard and the rider is thrown clean off, flung sideways o",
+      "observe": "thrown_from_the_jet_ski",
+      "requires": {
+        "firedAny": [
+          "Shark Lunges",
+          "Rogue Wave"
+        ]
+      }
+    },
+    {
+      "id": "rides_into_the_sunset",
+      "q": "Is this visible in the frame now: The sun sinks low toward the horizon and the sky blazes into deep orange, gold and pink as",
+      "observe": "rides_into_the_sunset",
+      "requires": {
+        "minChunks": 160,
+        "minHealth": 1,
+        "notFired": [
+          "Thrown from the Jet Ski"
+        ]
+      }
+    },
+    {
+      "id": "runs_out_of_fuel",
+      "q": "Is this visible in the frame now: The jet ski's engine sputters, coughs and dies as the last of the fuel runs dry, and the c",
+      "observe": "runs_out_of_fuel",
+      "requires": {
+        "minChunks": 160,
+        "maxHealth": 0
+      }
+    },
+    {
+      "id": "doing_spin_360",
+      "q": "Is the main character performing this action right now: The rider whips the jet ski into a tight spinning 360, the hull skating around and sweepin",
+      "observe": "doing_spin_360",
+      "requires": null
+    },
+    {
+      "id": "doing_nose_pop",
+      "q": "Is the main character performing this action right now: The rider yanks the handlebars back and pops the nose of the jet ski high into the air, ri",
+      "observe": "doing_nose_pop",
+      "requires": null
+    },
+    {
+      "id": "doing_slalom_weave",
+      "q": "Is the main character performing this action right now: The rider snaps the jet ski into a fast slalom, weaving sharply left and right through the",
+      "observe": "doing_slalom_weave",
+      "requires": null
+    },
+    {
+      "id": "doing_superman",
+      "q": "Is the main character performing this action right now: The rider stretches out flat off the back of the jet ski in a superman trick, gripping the",
+      "observe": "doing_superman",
+      "requires": null
+    },
+    {
+      "id": "doing_one_hand_wave",
+      "q": "Is the main character performing this action right now: The rider lifts one hand clean off the handlebars and waves it high overhead, the other ha",
+      "observe": "doing_one_hand_wave",
+      "requires": null
+    },
+    {
+      "id": "doing_donut_spray",
+      "q": "Is the main character performing this action right now: The rider leans the jet ski into a tight continuous circle, carving one full donut after a",
+      "observe": "doing_donut_spray",
+      "requires": null
+    },
+    {
+      "id": "doing_jump_off",
+      "q": "Is the main character performing this action right now: The rider stands up and leaps clean off the jet ski, splashing down INTO the turquoise wat",
+      "observe": "doing_jump_off",
+      "requires": null
+    },
+    {
+      "id": "doing_jump_back_on",
+      "q": "Is the main character performing this action right now: The rider swims the last stroke to the drifting jet ski, grabs the handlebars and hauls hi",
+      "observe": "doing_jump_back_on",
+      "requires": {
+        "firedAny": [
+          "Jump Off",
+          "Thrown from the Jet Ski"
+        ]
+      }
+    }
+  ],
+  "system": "You are a visual state checker. Answer each question true or false about the image, or \"unknown\" when you genuinely cannot tell from the image — never guess. Respond with ONLY a JSON object mapping each id to true, false, or \"unknown\".",
+  "user_text": "Answer each of these yes/no questions about the image. Use \"unknown\" when you genuinely cannot tell from the image — do not guess. Respond with ONLY a JSON object mapping each id to true, false, or \"unknown\".\n\n- calm_open_water: Is this visible in the frame now: The open sea stretches out ahead calm and clear, the turquoise water glassy and undisturbe\n- shark_appears: Is this visible in the frame now: A single tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff tria\n- shark_lunges: Is this visible in the frame now: The tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff triangula\n- dolphins_leap_alongside: Is this visible in the frame now: A pod of sleek dolphins surfaces and leaps in formation alongside the jet ski, arcing out \n- storm_rolls_in: Is this visible in the frame now: The sky darkens as heavy storm clouds roll across the sun, the wind whips up, and the calm\n- waterspout_forms: Is this visible in the frame now: A towering waterspout twists up from the sea on the horizon ahead — a swirling column of w\n- whale_breaches: Is this visible in the frame now: The rider on the jet ski remains the main subject, unchanged, while off to one side EXACTL\n- island_appears: Is this visible in the frame now: A rocky island rises into view on the horizon ahead — a single dark craggy outcrop of ston\n- sea_turtle: Is this visible in the frame now: A single large green sea turtle glides gently through the clear turquoise water just ahead\n- volcanic_island_erupts: Is this visible in the frame now: The distant rocky outcrop on the horizon erupts into a volcano — glowing orange lava strea\n- rogue_wave: Is this visible in the frame now: A towering rogue wave rears up ahead — a steep wall of dark water rising far above the jet\n- fuel_runs_low: Is this visible in the frame now: The jet ski's engine begins to strain and sputter as the fuel runs low — the motor coughin\n- thrown_from_the_jet_ski: Is this visible in the frame now: The jet ski hits a wave and bucks hard and the rider is thrown clean off, flung sideways o\n- rides_into_the_sunset: Is this visible in the frame now: The sun sinks low toward the horizon and the sky blazes into deep orange, gold and pink as\n- runs_out_of_fuel: Is this visible in the frame now: The jet ski's engine sputters, coughs and dies as the last of the fuel runs dry, and the c\n- doing_spin_360: Is the main character performing this action right now: The rider whips the jet ski into a tight spinning 360, the hull skating around and sweepin\n- doing_nose_pop: Is the main character performing this action right now: The rider yanks the handlebars back and pops the nose of the jet ski high into the air, ri\n- doing_slalom_weave: Is the main character performing this action right now: The rider snaps the jet ski into a fast slalom, weaving sharply left and right through the\n- doing_superman: Is the main character performing this action right now: The rider stretches out flat off the back of the jet ski in a superman trick, gripping the\n- doing_one_hand_wave: Is the main character performing this action right now: The rider lifts one hand clean off the handlebars and waves it high overhead, the other ha\n- doing_donut_spray: Is the main character performing this action right now: The rider leans the jet ski into a tight continuous circle, carving one full donut after a\n- doing_jump_off: Is the main character performing this action right now: The rider stands up and leaps clean off the jet ski, splashing down INTO the turquoise wat\n- doing_jump_back_on: Is the main character performing this action right now: The rider swims the last stroke to the drifting jet ski, grabs the handlebars and hauls hi",
+  "raw_reply": "{\"calm_open_water\": true, \"shark_appears\": true, \"shark_lunges\": false, \"dolphins_leap_alongside\": false, \"storm_rolls_in\": false, \"waterspout_forms\": false, \"whale_breaches\": false, \"island_appears\": true, \"sea_turtle\": false, \"volcanic_island_erupts\": false, \"rogue_wave\": false, \"fuel_runs_low\": false, \"thrown_from_the_jet_ski\": false, \"rides_into_the_sunset\": false, \"runs_out_of_fuel\": false, \"doing_spin_360\": false, \"doing_nose_pop\": false, \"doing_slalom_weave\": false, \"doing_superman\": false, \"doing_one_hand_wave\": false, \"doing_donut_spray\": false, \"doing_jump_off\": false, \"doing_jump_back_on\": false}",
+  "answers": {
+    "calm_open_water": true,
+    "shark_appears": true,
+    "shark_lunges": false,
+    "dolphins_leap_alongside": false,
+    "storm_rolls_in": false,
+    "waterspout_forms": false,
+    "whale_breaches": false,
+    "island_appears": true,
+    "sea_turtle": false,
+    "volcanic_island_erupts": false,
+    "rogue_wave": false,
+    "fuel_runs_low": false,
+    "thrown_from_the_jet_ski": false,
+    "rides_into_the_sunset": false,
+    "runs_out_of_fuel": false,
+    "doing_spin_360": false,
+    "doing_nose_pop": false,
+    "doing_slalom_weave": false,
+    "doing_superman": false,
+    "doing_one_hand_wave": false,
+    "doing_donut_spray": false,
+    "doing_jump_off": false,
+    "doing_jump_back_on": false
+  },
+  "observations": {
+    "calm_open_water": true,
+    "shark_appears": true,
+    "shark_lunges": false,
+    "dolphins_leap_alongside": false,
+    "storm_rolls_in": false,
+    "waterspout_forms": false,
+    "whale_breaches": false,
+    "island_appears": true,
+    "sea_turtle": false,
+    "volcanic_island_erupts": false,
+    "rogue_wave": false,
+    "fuel_runs_low": false,
+    "thrown_from_the_jet_ski": false,
+    "rides_into_the_sunset": false,
+    "runs_out_of_fuel": false,
+    "doing_spin_360": false,
+    "doing_nose_pop": false,
+    "doing_slalom_weave": false,
+    "doing_superman": false,
+    "doing_one_hand_wave": false,
+    "doing_donut_spray": false,
+    "doing_jump_off": false,
+    "doing_jump_back_on": false
+  },
+  "ops": [],
+  "elapsed_s": 3.22,
+  "tokens": {
+    "prompt": 1117,
+    "completion": 200
+  }
+}

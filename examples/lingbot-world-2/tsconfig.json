@@ -19,6 +19,7 @@
       }
     ],
     "paths": {
+      "@/lib/*": ["../../lib/*"],
       "@/*": ["./*"]
     }
   },
@@ -30,5 +31,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "coordinator"]
+  "exclude": ["node_modules"]
 }
