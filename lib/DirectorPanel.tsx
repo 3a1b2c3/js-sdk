@@ -10,6 +10,18 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
+// Tailwind class groups
+const styles = {
+  btn: "h-7 rounded border px-2.5 font-mono text-[11px] transition-colors disabled:opacity-30",
+  btnActive: "border-emerald-400/60 bg-emerald-400/20 text-emerald-200",
+  btnInactive: "border-white/15 bg-white/5 text-white/70 hover:bg-white/10",
+  input: "h-7 rounded border border-white/15 bg-white/5 px-2 font-mono text-[11px] text-white/80 placeholder:text-white/25 disabled:opacity-30",
+  label: "font-mono text-[11px] uppercase tracking-widest text-white/80",
+  monoXs: "font-mono text-[11px]",
+  factRow: "flex items-center gap-1.5 mono-xs whitespace-nowrap",
+  activityRow: "flex items-center gap-1.5 mono-xs whitespace-nowrap",
+};
+
 type Life = { kind: "sustained" } | { kind: "steps"; n: number } | { kind: "instant" };
 
 // One entry of the live activity feed broadcast by the coordinator.
@@ -69,12 +81,7 @@ function activityLabel(a: ActivityEntry): string {
 const DIRECTOR_HOTKEYS = "tyupfghbnvxz";
 
 function btn(active = false) {
-  return cn(
-    "h-7 rounded border px-2.5 font-mono text-[11px] transition-colors disabled:opacity-30",
-    active
-      ? "border-emerald-400/60 bg-emerald-400/20 text-emerald-200"
-      : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10",
-  );
+  return cn(styles.btn, active ? styles.btnActive : styles.btnInactive);
 }
 
 export function DirectorPanel({
@@ -132,9 +139,9 @@ export function DirectorPanel({
     if (!visible || !wsUrl) return;
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
-    ws.onopen = () => { console.log(`[panel] connected to coordinator ${wsUrl}`); setConnected(true); };
-    ws.onclose = () => { console.log("[panel] coordinator socket closed"); setConnected(false); };
-    ws.onerror = () => { console.log("[panel] coordinator socket error"); setConnected(false); };
+    ws.onopen = () => setConnected(true);
+    ws.onclose = () => setConnected(false);
+    ws.onerror = () => setConnected(false);
     ws.onmessage = (e) => {
       try {
         const m = JSON.parse(String(e.data));
@@ -149,11 +156,8 @@ export function DirectorPanel({
           setRawState(m); // keep the full snapshot for the raw view
         } else if (m.type === "activity") {
           const entry = m as ActivityEntry & { type: string };
-          // Stamp arrival time (browser local, HH:MM:SS) so each feed row is timed.
           entry.ts = new Date().toLocaleTimeString(undefined, { hour12: false });
-          // Debug: confirm activity broadcasts reach the browser (F12 -> Console).
-          console.log(`[panel] activity: ${entry.role} ${entry.op} ${entry.key ?? entry.name ?? ""}`, entry);
-          setActivity((prev) => [...prev, entry].slice(-40)); // keep INCOMING order (newest at bottom), cap 40
+          setActivity((prev) => [...prev, entry].slice(-40));
         }
       } catch {
         /* ignore */
@@ -287,59 +291,53 @@ export function DirectorPanel({
 
   if (!visible) return null;
 
-  const Sep = () => <span className="h-5 w-px bg-white/15" />;
-  // In AI-only mode the human's ops are dropped by the coordinator anyway, so
-  // disable the human-action buttons for clear feedback. The who-switch and
-  // feed toggle stay enabled so you can switch back.
   const humanDisabled = mode === "ai";
 
   return (
     <div
-      className="relative z-40 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border border-white/15 bg-black/85 backdrop-blur-sm px-3 py-2 text-white shadow-lg"
+      className="relative z-40 flex flex-col gap-2 rounded-xl border border-white/15 bg-black/85 backdrop-blur-sm px-3 py-2 text-white shadow-lg"
       onMouseDownCapture={(e) => {
-        // Clicking a director BUTTON must not steal keyboard focus from the game,
-        // so the player can drive WASD/hold-keys and fire director events at the
-        // same time. Inputs (key/clause/ws) keep normal focus.
         if ((e.target as HTMLElement).closest("button")) e.preventDefault();
       }}
     >
-      {/* Header + who switch */}
-      <div className="flex items-center gap-2">
-        <span className={cn("w-2 h-2 rounded-full", connected ? "bg-emerald-400" : "bg-red-500")} />
-        <span className="font-mono text-[11px] uppercase tracking-widest text-white/80 whitespace-nowrap">
-          {mode === "ai"
-            ? "AI Director"
-            : mode === "both"
-              ? "Human + AI Director"
-              : "Human Director"}
-        </span>
-        {gameName && (
-          <span className="font-mono text-[11px] text-emerald-300/90 whitespace-nowrap">· {gameName}</span>
-        )}
-        {count > 0 && (
-          <span
-            className="font-mono text-[11px] text-amber-300/90 whitespace-nowrap"
-            title="Shared entity/spawn count — bumped by director spawn/kill events"
-          >
-            · {count} spawned
+      {/* Header row: status + mode switch + state toggle */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <div className="flex items-center gap-2">
+          <span className={cn("w-2 h-2 rounded-full", connected ? "bg-emerald-400" : "bg-red-500")} />
+          <span className="font-mono text-[11px] uppercase tracking-widest text-white/80 whitespace-nowrap">
+            {mode === "ai"
+              ? "AI Director"
+              : mode === "both"
+                ? "Human + AI Director"
+                : "Human Director"}
           </span>
-        )}
+          {gameName && (
+            <span className="font-mono text-[11px] text-emerald-300/90 whitespace-nowrap">· {gameName}</span>
+          )}
+          {count > 0 && (
+            <span
+              className="font-mono text-[11px] text-amber-300/90 whitespace-nowrap"
+              title="Shared entity/spawn count — bumped by director spawn/kill events"
+            >
+              · {count} spawned
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          {MODES.map((mo) => (
+            <button key={mo} className={btn(mode === mo)} onClick={() => send({ op: "mode", mode: mo })}>
+              {mo}
+            </button>
+          ))}
+        </div>
+        <button className={btn(showState)} onClick={() => setShowState((v) => !v)} title="Show the live coordinator state (History facts + lifetimes)">
+          state
+        </button>
       </div>
-      <div className="flex items-center gap-1">
-        {MODES.map((mo) => (
-          <button key={mo} className={btn(mode === mo)} onClick={() => send({ op: "mode", mode: mo })}>
-            {mo}
-          </button>
-        ))}
-      </div>
-      <button className={btn(showState)} onClick={() => setShowState((v) => !v)} title="Show the live coordinator state (History facts + lifetimes)">
-        state
-      </button>
-      <Sep />
 
-      {/* Objective — player goal (summary) + the Director agent's standing intent */}
+      {/* Objective row — player goal (summary) + the Director agent's standing intent */}
       {objective && (objective.summary || objective.director) && (
-        <div className="flex basis-full items-start gap-2 min-w-0">
+        <div className="flex items-start gap-2 min-w-0">
           <span className="mono-label mt-0.5">objective</span>
           <div className="flex flex-col min-w-0 leading-tight">
             {objective.summary && (
@@ -358,39 +356,50 @@ export function DirectorPanel({
 
       {/* Optional coordinator-state view — live History facts + remaining lifetime */}
       {showState && (
-        <div className="flex basis-full flex-col gap-0.5 rounded border border-white/10 bg-black/40 p-1.5 max-h-32 overflow-y-auto">
-          <span className="mono-label">
-            state · history · {coordFacts.length} fact{coordFacts.length === 1 ? "" : "s"}
-          </span>
-          {coordFacts.length === 0 ? (
-            <span className="mono-xs text-white/30">— empty —</span>
-          ) : (
-            coordFacts.map((f) => (
-              <div key={f.key} className="flex items-start gap-1.5 mono-xs">
-                <span className="shrink-0 rounded bg-white/10 px-1 text-emerald-200/80">{f.remaining}</span>
-                <span className="shrink-0 text-sky-200/70">{f.key}</span>
-                <span className="text-white/60 truncate" title={f.clause}>{f.clause}</span>
-              </div>
-            ))
-          )}
-          {/* Raw state snapshot — the full coordinator state object as JSON */}
+        <div className="flex basis-full flex-col gap-1 rounded border border-white/10 bg-black/40 p-1.5">
+          <div className="flex items-center gap-2 justify-between">
+            <span className="mono-label">
+              state · {coordFacts.length} fact{coordFacts.length === 1 ? "" : "s"}
+            </span>
+            {rawState && (
+              <button
+                className="text-[10px] text-white/40 hover:text-white/70 transition-colors"
+                onClick={() => {
+                  const el = document.getElementById('raw-state-view');
+                  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+                }}
+              >
+                raw ▸
+              </button>
+            )}
+          </div>
+          <div className="max-h-16 overflow-y-auto flex flex-col gap-0.5">
+            {coordFacts.length === 0 ? (
+              <span className="mono-xs text-white/30">— empty —</span>
+            ) : (
+              coordFacts.map((f) => (
+                <div key={f.key} className="flex items-center gap-1.5 mono-xs whitespace-nowrap">
+                  <span className="shrink-0 rounded bg-white/10 px-1 text-emerald-200/80">{f.remaining}</span>
+                  <span className="shrink-0 text-sky-200/70">{f.key}</span>
+                  <span className="text-white/60 truncate min-w-0" title={f.clause}>{f.clause}</span>
+                </div>
+              ))
+            )}
+          </div>
+          {/* Raw state snapshot — horizontally scrollable JSON */}
           {rawState && (
-            <>
-              <span className="mt-1 mono-label">
-                raw state
-              </span>
-              <pre className="whitespace-pre-wrap break-all font-mono text-[9px] leading-tight text-white/55">
-                {JSON.stringify(rawState, null, 2)}
+            <div id="raw-state-view" className="hidden max-h-20 overflow-x-auto overflow-y-hidden bg-black/60 rounded p-1">
+              <pre className="whitespace-nowrap inline-block font-mono text-[8px] leading-tight text-white/40 break-keep">
+                {JSON.stringify(rawState, null, 1).split('\n').map((line, i) => line.replace(/^\s+/, '')).join(' | ')}
               </pre>
-            </>
+            </div>
           )}
         </div>
       )}
 
-      {/* Scene events (director-owned: scene change / death) from the active scene */}
+      {/* Scene events row (director-owned: scene change / death) from the active scene */}
       {sceneEvents.length > 0 && (
-        <>
-          <div className="flex basis-full flex-wrap items-center gap-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-1 min-w-0">
             <button
               type="button"
               onClick={() => setOptionsOpen((v) => !v)}
@@ -438,25 +447,22 @@ export function DirectorPanel({
               </button>
               );
             })}
-          </div>
-        </>
+        </div>
       )}
 
-      {/* Live activity feed — who fired what (esp. the AI director), newest first.
-          Always shown, with a live status line, so an empty feed is diagnosable. */}
-      {(
-        <div ref={activityBoxRef} className="flex basis-full flex-col gap-0.5 rounded border border-white/10 bg-black/40 p-1.5 max-h-28 overflow-y-auto">
+      {/* Activity feed row — who fired what (esp. the AI director), newest first. */}
+      <div ref={activityBoxRef} className="flex flex-col gap-0.5 rounded border border-white/10 bg-black/40 p-1.5 max-h-20 overflow-y-auto">
           {activity.length === 0 && (
             <span className="mono-xs text-white/30">
-              waiting… player actions + ai fires appear here
+              waiting…
             </span>
           )}
           {activity.map((a) => (
-            <div key={a.id} className="flex items-start gap-1.5 mono-xs">
-              {a.ts && <span className="shrink-0 tabular-nums text-white/30">{a.ts}</span>}
+            <div key={a.id} className="flex items-center gap-1.5 mono-xs whitespace-nowrap">
+              {a.ts && <span className="shrink-0 tabular-nums text-white/30 text-[9px]">{a.ts}</span>}
               <span
                 className={cn(
-                  "shrink-0 rounded px-1 uppercase",
+                  "shrink-0 rounded px-1 uppercase text-[9px]",
                   a.role === "ai"
                     ? "bg-emerald-400/20 text-emerald-200/90"
                     : a.role === "human"
@@ -466,32 +472,31 @@ export function DirectorPanel({
               >
                 {a.role}
               </span>
-              <span className="shrink-0 text-white/80">{activityLabel(a)}</span>
+              <span className="shrink-0 text-white/80 text-[10px]">{activityLabel(a)}</span>
               {a.clause && (
-                <span className="text-white/40 truncate" title={a.clause}>
+                <span className="text-white/40 truncate text-[9px] min-w-0" title={a.clause}>
                   {a.clause}
                 </span>
               )}
             </div>
           ))}
-        </div>
-      )}
+      </div>
 
-      {/* Custom fact */}
+      {/* Custom fact row */}
       <div className="flex items-center gap-1">
         <input
           value={key}
           onChange={(e) => setKey(e.target.value)}
           disabled={humanDisabled}
           placeholder="key"
-          className="h-7 w-28 rounded border border-white/15 bg-white/5 px-2 font-mono text-[11px] text-white/80 placeholder:text-white/25 disabled:opacity-30"
+          className={cn(styles.input, "w-28")}
         />
         <input
           value={clause}
           onChange={(e) => setClause(e.target.value)}
           disabled={humanDisabled}
           placeholder="clause of prose…"
-          className="h-7 w-40 rounded border border-white/15 bg-white/5 px-2 font-mono text-[11px] text-white/80 placeholder:text-white/25 disabled:opacity-30"
+          className={cn(styles.input, "w-40")}
         />
         <button
           className={btn()}
@@ -507,8 +512,8 @@ export function DirectorPanel({
         </button>
       </div>
 
-      {/* Live projected-prompt readout + close, pushed right */}
-      <div className="ml-auto flex items-center gap-2 min-w-0">
+      {/* Footer row: live projected-prompt readout + close button */}
+      <div className="flex items-center gap-2 min-w-0 ml-auto">
         <span
           className="mono-xs text-emerald-200/70 truncate max-w-[16rem]"
           title={facts || "—"}
@@ -521,12 +526,12 @@ export function DirectorPanel({
       </div>
 
       {!connected && (
-        <div className="w-full flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <span className="mono-xs text-white/40 whitespace-nowrap">
             coordinator ws
           </span>
           <input
-            className="flex-1 min-w-0 rounded border border-white/15 bg-white/5 px-2 py-0.5 mono-xs text-white/80 outline-none focus:border-emerald-400/50"
+            className={cn(styles.input, "flex-1 min-w-0 py-0.5 outline-none focus:border-emerald-400/50")}
             placeholder="ws://localhost:8080/director"
             value={wsUrl}
             spellCheck={false}
