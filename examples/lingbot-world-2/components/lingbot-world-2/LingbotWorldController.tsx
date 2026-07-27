@@ -348,6 +348,7 @@ export function LingbotWorldController({ className }: { className?: string }) {
     gateStateNow,
     isAvailableNow,
     recordFired,
+    syncFired,
     hudHealth,
     hudMaxHealth,
     hudInventory,
@@ -491,10 +492,23 @@ export function LingbotWorldController({ className }: { className?: string }) {
           health?: number;
           inventory?: string[];
           slug?: string;
+          fired?: string[];
         };
         if (m.type === "facts") {
           coordPromptRef.current = m.prompt ?? "";
           recomputePromptAndSendRef.current();
+          // Sync coordinator-side fires (AI director / separate Director panel) into the
+          // local fired-set so gated successors unlock in the player chips + panel. Names
+          // arrive LOWERCASED → map back to the scene's display-case names.
+          console.log("[gate] facts recv — coord fired:", m.fired, "| local scene:", !!sceneRef.current);
+          if (Array.isArray(m.fired) && sceneRef.current) {
+            const lower = new Set(m.fired);
+            const display = sceneRef.current.events
+              .filter((e) => lower.has(e.name.toLowerCase()))
+              .map((e) => e.name);
+            console.log("[gate] synced fired -> local set:", display);
+            if (display.length) syncFired(display);
+          }
         } else if (m.type === "vitals") {
           setVitalsFromServer(m.health ?? 0, m.inventory ?? []);
         } else if (m.type === "won") {
@@ -525,7 +539,7 @@ export function LingbotWorldController({ className }: { className?: string }) {
       coordWsRef.current = null;
       ws.close();
     };
-  }, [coordWsUrl]);
+  }, [coordWsUrl, syncFired]);
 
   // Re-push director events (with fresh `available` flags) whenever the fired-set
   // or health changes, so gated events unlock live in the Director panel.

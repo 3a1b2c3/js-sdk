@@ -22,8 +22,9 @@ REM   start.bat local               same, with local video
 REM   start.bat nodirector          cloud video only, no coordinator/AI
 REM ==========================================================================
 set "HERE=%~dp0"
-cd /d "%HERE%"
-set "NEXT=%HERE%node_modules\.bin\next.CMD"
+REM The Next.js app lives under examples/; the coordinator is a sibling of this bat.
+set "APP=%HERE%examples\lingbot-world-2\"
+set "NEXT=%APP%node_modules\.bin\next.CMD"
 
 REM --- parse args: video mode (cloud|local) + director on/off (on by default) ---
 set "MODE=cloud"
@@ -72,7 +73,7 @@ REM director's websocket connect lands after the port is bound.
 if defined DIRECTOR if defined NVIDIA_API_KEY (
   if defined COORDSTARTED ( echo waiting for coordinator to bind... & timeout /t 4 /nobreak >nul )
   echo AI director: starting ^(BILLED once a game is picked^) -- no game yet, follows the UI...
-  call "%HERE%..\..\coordinator\run_ai.bat"
+  call "%HERE%coordinator\run_ai.bat"
 )
 if defined DIRECTOR if not defined NVIDIA_API_KEY echo AI director: off -- set NVIDIA_API_KEY to auto-start it ^(billed^).
 
@@ -80,15 +81,15 @@ where node >nul 2>&1
 if errorlevel 1 ( echo ERROR: Node.js not found. Install:  winget install OpenJS.NodeJS.LTS & exit /b 1 )
 
 REM --- ensure .env.local has a key (cloud video) ---
-if not exist "%HERE%.env.local" (
+if not exist "%APP%.env.local" (
   if defined REACTOR_API_KEY (
-    >"%HERE%.env.local" echo REACTOR_API_KEY=%REACTOR_API_KEY%
-  ) else if exist "%HERE%.env.example" (
-    copy /y "%HERE%.env.example" "%HERE%.env.local" >nul
+    >"%APP%.env.local" echo REACTOR_API_KEY=%REACTOR_API_KEY%
+  ) else if exist "%APP%.env.example" (
+    copy /y "%APP%.env.example" "%APP%.env.local" >nul
   )
 )
 if /i not "%MODE%"=="local" (
-  findstr /b /c:"REACTOR_API_KEY=rk_" "%HERE%.env.local" >nul 2>&1
+  findstr /b /c:"REACTOR_API_KEY=rk_" "%APP%.env.local" >nul 2>&1
   if errorlevel 1 echo WARNING: cloud video but no REACTOR_API_KEY=rk_... in .env.local -- session will 401.
 )
 
@@ -102,5 +103,6 @@ if not exist "%NEXT%" ( echo ERROR: dependencies not installed. & exit /b 1 )
 echo.
 echo dev server -^> http://localhost:3000   (Ctrl+C to stop)
 echo.
+cd /d "%APP%"
 call "%NEXT%" dev
 endlocal

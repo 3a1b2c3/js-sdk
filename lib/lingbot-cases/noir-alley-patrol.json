@@ -105,6 +105,7 @@
         "actor": "environment",
         "detail": "THE single gunman in the gray jacket and mask on the first-floor fire-escape landing — the only one, a lone masked figure in a gray jacket with no tactical gear — is hit, jerks, and slumps down dead right there ON the fire escape, crumpling against the metal railing and going limp draped over the first-floor landing one storey above the alley. He STAYS on that first-floor landing exactly where he was — he does NOT fall, topple, tumble, jump or drop down to the ground or the street below, staying on the first-floor fire-escape landing the whole time — and remains up there motionless and lifeless for the rest of the scene. EXACTLY ONE gunman, no second gunman, no duplicate and no clone. The uniformed police officer himself stays the focus of the frame, unchanged in pose, position and appearance throughout — only the world around him changes.",
         "count": -1,
+        "autoTrigger": true,
         "requires": {
           "fired": [
             "Gunman on the Fire Escape"

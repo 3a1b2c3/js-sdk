@@ -114,9 +114,16 @@ export interface NamedEvent {
   // ending. Death (health→0) is the lose-terminal; this is the win side.
   win?: boolean;
   // Per-tick fire probability (0..1) once `requires` holds — randomizes WHEN the
-  // event fires after its gate opens (rules-engine only). e.g. minChunks:24 +
+  // event fires after its gate opens (rules-decide only). e.g. minChunks:24 +
   // chance:0.2 → the pickup arrives at a varied time past chunk 24, not exactly on it.
   chance?: number;
+  // Tie-break when several gated events are eligible at once: the rules-decide director
+  // fires the HIGHEST-priority tier, choosing at random within it. Omitted → 1 (flat),
+  // so equal-priority events form a fair random pool.
+  priority?: number;
+  // Max times this event may fire (default 1 = fire once). Distinct from `count`,
+  // which is a signed entity spawn/kill delta (e.g. -1 = a death), not a fire cap.
+  maxFires?: number;
 }
 
 // The gate types + predicate now live in ./event-gate — a dependency-free module (no

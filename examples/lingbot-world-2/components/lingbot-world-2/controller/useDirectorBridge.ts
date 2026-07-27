@@ -76,6 +76,7 @@ export function useDirectorBridge({
           win: e.win, // terminal win event → coordinator flips `won` when it fires
           chance: e.chance, // per-tick fire probability (randomized timing, rules engine)
         }));
+      console.log("[gate] director availability:", list.map((e) => `${e.name}=${e.available}`).join("  "));
       sceneDirEventsRef.current = list;
       // Bridge the current scene's director events to the in-app Human Director
       // panel directly (works with NO coordinator connection), so the panel

@@ -47,6 +47,10 @@ export function useHudGating({
   // panel) re-derives availability when the fired-set changes. Reset on scene
   // select / restart (via initHud).
   const firedEventsRef = useRef<Set<string>>(new Set());
+  // Per-event fire tally for the `count` cap. An action that sets `count` locks out
+  // after firing that many times; UNSET → unlimited (the default for player chips,
+  // which are freely repeatable). Reset per scene by initHud.
+  const firedCountsRef = useRef<Record<string, number>>({});
   const [firedVersion, setFiredVersion] = useState(0);
   // Ref mirrors of the HUD vitals so the imperative event handlers read fresh
   // values without stale closures (synced from state by effects below).
@@ -62,13 +66,34 @@ export function useHudGating({
     [],
   );
   const isAvailableNow = useCallback(
-    (ev?: NamedEvent | null) => (ev ? isEventAvailable(ev, gateStateNow()) : true),
+    (ev?: NamedEvent | null) => {
+      if (!ev) return true;
+      if (!isEventAvailable(ev, gateStateNow())) return false;
+      // Fire cap — ONLY when the event sets `maxFires` (chips are unlimited by default).
+      if (ev.maxFires !== undefined && (firedCountsRef.current[ev.name] ?? 0) >= ev.maxFires) return false;
+      return true;
+    },
     [gateStateNow],
   );
   const recordFired = useCallback((name?: string) => {
-    if (!name || firedEventsRef.current.has(name)) return;
-    firedEventsRef.current.add(name);
+    if (!name) return;
+    firedEventsRef.current.add(name); // binary set for `requires.fired` predecessors
+    firedCountsRef.current[name] = (firedCountsRef.current[name] ?? 0) + 1; // toward the `maxFires` cap
     setFiredVersion((v) => v + 1);
+  }, []);
+  // Merge fired-event names the COORDINATOR reports (AI-director / separate-panel fires
+  // that never went through this client's recordFired) into the local fired-set, so gated
+  // successors unlock in the player chips + Director panel. Idempotent — adds to the set
+  // WITHOUT bumping the fire tally (that's the local fire count for the `maxFires` cap).
+  const syncFired = useCallback((names: string[]) => {
+    let changed = false;
+    for (const n of names) {
+      if (!firedEventsRef.current.has(n)) {
+        firedEventsRef.current.add(n);
+        changed = true;
+      }
+    }
+    if (changed) setFiredVersion((v) => v + 1);
   }, []);
 
   // --- HUD vitals -----------------------------------------------------------
@@ -102,6 +127,7 @@ export function useHudGating({
       const max = Math.min(100, cfg?.maxHealth ?? 100); // hard ceiling: 100
       // Reset event gating for the new scene so fired-state doesn't leak across scenes.
       firedEventsRef.current = new Set();
+      firedCountsRef.current = {};
       setFiredVersion((v) => v + 1);
       hudMaxHealthRef.current = max;
       setHudMaxHealth(max);
@@ -203,6 +229,7 @@ export function useHudGating({
     gateStateNow,
     isAvailableNow,
     recordFired,
+    syncFired,
     // HUD state (for render)
     hudHealth,
     hudMaxHealth,

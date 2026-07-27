@@ -105,7 +105,7 @@ function sendAll(msg: string): void {
 }
 
 function broadcast(): void {
-  sendAll(JSON.stringify({ type: "facts", prompt: history.project() }));
+  sendAll(JSON.stringify({ type: "facts", prompt: history.project(), fired: firedEventNames(history) }));
   broadcastState();
 }
 
@@ -121,6 +121,7 @@ function leanSceneEvents(): Omit<SceneEvent, "clause">[] {
     health: e.health,
     addItem: e.addItem,
     count: e.count,
+    priority: e.priority,
   }));
 }
 
@@ -193,7 +194,8 @@ interface SceneEvent {
   available?: boolean; // player-computed gate flag (forwarded to the AI director)
   requires?: unknown; // raw declarative gate, evaluated by the AI director itself
   win?: boolean; // a terminal WIN event: asserting it flips `won` + fires the win banner
-  chance?: number; // per-tick fire probability once the gate holds (rules engine timing jitter)
+  chance?: number; // per-tick fire probability once the gate holds (rules-decide timing jitter)
+  priority?: number; // tie-break: the highest-priority eligible tier fires (random within tier); default 1
 }
 let sceneEvents: SceneEvent[] = [];
 
@@ -216,19 +218,17 @@ let activeGame = ""; // active scene slug (UI selection) — the AI director fol
 let gameOwner: WebSocket | null = null; // the Player socket that loaded the active game
 const directorSockets = new Set<WebSocket>(); // sockets that registered as the AI director
 
-// ── json-rules-engine compatibility ─────────────────────────────────────────
-// The coordinator state is exposed AS-IS as engine facts (see `gameFacts()`), so a
-// `json-rules-engine` rule set can drive the director with NO adapter and NO second
+// ── Director facts (flat state snapshot) ─────────────────────────────────────
+// The coordinator state is exposed AS-IS as a flat facts snapshot (see `gameFacts()`)
+// that the shared `decideEvents` gate predicate reads directly — NO adapter, NO second
 // copy of truth. Most state (health, chunks, inventory, entityCount, objective) is
-// already a plain value a rule reads directly. Two fields exist to keep that shape
-// first-class and always-current:
+// already a plain value. Two fields exist to keep that shape first-class and current:
 //   • firedEvents  — fired scene events by DISPLAY NAME, DERIVED from the ONE History's
-//     `scene:<slug>` facts each call (NO cached copy, no sync to keep); rules use
-//     `{ fact: "firedEvents", operator: "contains", … }`.
+//     `scene:<slug>` facts each call (NO cached copy, no sync to keep).
 //   • observations — the probe's latest yes/no reads, posted by the AI director via
 //     op:"observe" (the only fact the coordinator doesn't otherwise hold).
-// Field names below == the `fact` names rules reference, so authored `requires` gates
-// (fired/notFired/minChunks/maxHealth/minHealth/hasItem) map 1:1 to rule conditions.
+// Field names match the gate fields, so authored `requires` gates
+// (fired/firedAny/notFired/minChunks/maxHealth/minHealth/hasItem) map 1:1.
 let observations: Record<string, boolean> = {}; // rules fact: latest probe reads
 
 // Debug view: echo each false→true probe read into the activity feed. Off by
@@ -237,11 +237,12 @@ const OBSERVE_ACTIVITY = process.env.COORDINATOR_OBSERVE_ACTIVITY === "1";
 
 // firedNameFromKey / firedEventNames now live in ./history-facts (pure + testable).
 
-/** The live coordinator state as a flat `json-rules-engine` facts object. Reads the
- *  current state each call (no copy); field names match the rules' `fact` names. */
+/** The live coordinator state as a flat facts snapshot for the shared decider. Reads
+ *  the current state each call (no copy); field names match the gate's fields. */
 function gameFacts(): Record<string, unknown> {
   return {
     firedEvents: firedEventNames(history),
+    firedCounts,
     health: vitals.health,
     maxHealth: vitals.maxHealth,
     inventory: vitals.inventory,
@@ -253,11 +254,11 @@ function gameFacts(): Record<string, unknown> {
   };
 }
 
-// ── Optional rules-engine director (json-rules-engine) ───────────────────────
-// The coordinator itself acts as the AI director, firing events from deterministic
-// rules over gameFacts() instead of the VLM. Rules are DERIVED from each scene
-// event's authored `requires` gate (fired / notFired / minChunks / maxHealth /
-// minHealth / hasItem) + a "don't re-fire" guard, so NO scene-JSON change is needed.
+// ── Optional rules-decide director (shared decideEvents) ─────────────────────
+// The coordinator itself acts as the AI director, firing events via the shared
+// `decideEvents` predicate over gameFacts() instead of the VLM. It evaluates each
+// scene event's authored `requires` gate (fired / firedAny / notFired / minChunks /
+// maxHealth / minHealth / hasItem) + a "don't re-fire" guard, so NO scene-JSON change is needed.
 // Paced by COORDINATOR_RULE_COOLDOWN. ON by default (COORDINATOR_RULES=0 to disable);
 // still only fires when director mode is ai/both — dormant in the default human mode.
 const RULES_ENABLED = process.env.COORDINATOR_RULES !== "0";
@@ -265,6 +266,7 @@ const RULE_COOLDOWN = Number(process.env.COORDINATOR_RULE_COOLDOWN ?? 12); // mi
 const RULE_WARMUP = 4; // ungated events wait this many chunks so the scene settles first
 let rulesActive = false;
 let lastRuleFireChunk = -1e9;
+let firedCounts: Record<string, number> = {}; // per-event fire tally for the `count` cap (reset per scene)
 // True while an AI director that does its OWN (VLM) deciding is connected. The rules
 // engine then stays dormant so the two never double-fire; a director run with
 // --rules-decide announces decides:false in its hello, which keeps rules active.
@@ -279,6 +281,7 @@ let aiModelConnected = false;
  *  lives in `./rules` (pure + unit-tested); this just owns the enabled/empty gating. */
 function rebuildRulesEngine(): void {
   lastRuleFireChunk = -1e9;
+  firedCounts = {}; // fresh fire tally per scene
   rulesActive = RULES_ENABLED && sceneEvents.length > 0;
   if (rulesActive) console.log(`[rules] active: ${sceneEvents.length} event(s)`);
 }
@@ -297,7 +300,7 @@ async function runRules(): Promise<void> {
   const eligible = decideEvents(sceneEvents, gameFacts() as unknown as DecideFacts, RULE_WARMUP)
     .map((name) => {
       const se = sceneEvents.find((s) => s.name === name);
-      return se ? { name, se, p: 1 } : null; // flat priority — scenes don't set one
+      return se ? { name, se, p: Number(se.priority ?? 1) } : null; // highest-priority eligible tier fires
     })
     .filter((x): x is { name: string; se: SceneEvent; p: number } => x !== null);
   if (eligible.length === 0) return;
@@ -305,6 +308,7 @@ async function runRules(): Promise<void> {
   const maxP = Math.max(...eligible.map((x) => x.p));
   const tier = eligible.filter((x) => x.p === maxP);
   const { name, se } = tier[Math.floor(Math.random() * tier.length)]; // equal chance within the tier
+  firedCounts[name.toLowerCase()] = (firedCounts[name.toLowerCase()] ?? 0) + 1; // toward the `count` cap
 
   const key = "scene:" + name.toLowerCase().replace(/\s+/g, "_");
   history.assert({ key, clause: se.clause, weight: 2, life: { kind: "sustained" } });
@@ -406,7 +410,7 @@ wss.on("connection", (ws) => {
   });
   // Hand the newcomer the current state so a late-joining Director (or a
   // Player that reloaded) sees the live world immediately.
-  ws.send(JSON.stringify({ type: "facts", prompt: history.project() }));
+  ws.send(JSON.stringify({ type: "facts", prompt: history.project(), fired: firedEventNames(history) }));
   ws.send(JSON.stringify({ type: "vitals", ...vitals }));
   ws.send(JSON.stringify({ type: "mode", mode: directorMode }));
   ws.send(JSON.stringify({ type: "scene_events", events: sceneEvents }));
@@ -612,8 +616,8 @@ wss.on("connection", (ws) => {
         broadcast();
         break;
       case "observe":
-        // The AI director posts the probe's latest yes/no reads so json-rules-engine
-        // rules (and any observation-gated logic) can see what's on screen. Facts-only:
+        // The AI director posts the probe's latest yes/no reads so the decider
+        // (and any observation-gated logic) can see what's on screen. Facts-only:
         // no History mutation, not mode-gated (perception, not a director action).
         // Opt-in (COORDINATOR_OBSERVE_ACTIVITY=1): surface each predicate that flips
         // false→true as a "yes" in the activity feed. Off by default — observations are

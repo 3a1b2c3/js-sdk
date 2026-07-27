@@ -4,6 +4,7 @@
 //   npx tsx --test event-decide.test.ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { decideEvents } from "../lib/event-decide";
 
@@ -65,4 +66,49 @@ test("chance gate: fires only when random <= probability", () => {
   const s = [{ name: "Turtle", chance: 0.1 }]; // ungated + 10%/tick
   assert.ok(decideEvents(s, { ...base, chunks: 0, random: 0.05 }, 0).includes("Turtle"), "fires when random < chance");
   assert.ok(!decideEvents(s, { ...base, chunks: 0, random: 0.5 }, 0).includes("Turtle"), "silent when random > chance");
+});
+
+test("fire cap: an event fires up to `maxFires` times, then stops", () => {
+  const s = [{ name: "Wave", maxFires: 2 }]; // ungated, may fire twice
+  assert.ok(decideEvents(s, { ...base, chunks: 0, firedCounts: {} }, 0).includes("Wave"), "eligible at 0 fires");
+  assert.ok(decideEvents(s, { ...base, chunks: 0, firedCounts: { wave: 1 } }, 0).includes("Wave"), "still eligible at 1 fire");
+  assert.ok(!decideEvents(s, { ...base, chunks: 0, firedCounts: { wave: 2 } }, 0).includes("Wave"), "capped at 2 fires");
+});
+
+test("default cap is 1 (fire-once) via the binary fired set", () => {
+  const s = [{ name: "Boom" }]; // no maxFires → cap 1
+  assert.ok(decideEvents(s, { ...base, chunks: 0 }, 0).includes("Boom"), "fires when not yet fired");
+  assert.ok(
+    !decideEvents(s, { ...base, chunks: 0, firedEvents: ["boom"] }, 0).includes("Boom"),
+    "fire-once by default (no firedCounts → falls back to firedEvents)",
+  );
+});
+
+// ── end-to-end on the REAL jet-ski scene (the working rules-decide scene) ──────
+const JETSKI = JSON.parse(
+  readFileSync(new URL("../lib/lingbot-cases/jet-ski-cruise.json", import.meta.url), "utf8"),
+);
+const JET = (JETSKI.scene.events as { actor?: string; name: string }[]).filter((e) => e.actor === "environment");
+
+test("real jet-ski scene: sequel/ending beats stay locked until their gate opens", () => {
+  const fresh = decideEvents(JET, { ...base, chunks: 0, random: 0 }); // random 0 → chance never blocks
+  assert.ok(!fresh.includes("Shark Lunges"), "shark lunge locked until shark appears");
+  assert.ok(!fresh.includes("Volcanic Island Erupts"), "volcano locked until island");
+  assert.ok(!fresh.includes("Rides into the Sunset"), "sunset needs its chunk floor");
+  const lunge = decideEvents(JET, { ...base, firedEvents: ["shark appears"], chunks: 5, random: 0 });
+  assert.ok(lunge.includes("Shark Lunges"), "shark lunge unlocks after shark appears fired");
+});
+
+// Regression: the noir gate the UI reported "not activating" —
+// "Gunman Falls" requires "Gunman on the Fire Escape". Proves the DECIDE/gate half is fine.
+const NOIR = JSON.parse(
+  readFileSync(new URL("../lib/lingbot-cases/noir-alley-patrol.json", import.meta.url), "utf8"),
+);
+const NOIR_EV = (NOIR.scene.events as { actor?: string; name: string }[]).filter((e) => e.actor === "environment");
+
+test("noir: Gunman Falls unlocks once Gunman on the Fire Escape has fired", () => {
+  const before = decideEvents(NOIR_EV, { ...base, chunks: 10, random: 0 });
+  assert.ok(!before.includes("Gunman Falls"), "locked before Gunman on the Fire Escape fires");
+  const after = decideEvents(NOIR_EV, { ...base, chunks: 10, random: 0, firedEvents: ["gunman on the fire escape"] });
+  assert.ok(after.includes("Gunman Falls"), "unlocks after Gunman on the Fire Escape fires");
 });

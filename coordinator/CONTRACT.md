@@ -47,7 +47,7 @@ of these. Change a contract → all implementers must change together.
 ```
 
 > Default mode is **rules-decide**: the `decide` box above is opt-in (`--vlm-decide`). Normally
-> the coordinator's `json-rules-engine` is the brain and the director runs only the `probe`.
+> the coordinator's shared `decideEvents` gate is the brain and the director runs only the `probe`.
 
 **Three flows that define the system:**
 
@@ -64,7 +64,7 @@ of these. Change a contract → all implementers must change together.
 3. **Perception vs decision — the observer and the state machine.** By default
    (**rules-decide**, the norm now that the VLM decide is off) the AI director is
    PERCEPTION-ONLY: the **probe** — the sole vision call, frame → observations, gate-valid
-   questions only — posts `op:"observe"`, and the coordinator's **`json-rules-engine`** is the
+   questions only — posts `op:"observe"`, and the coordinator's **shared `decideEvents` gate** is the
    brain that decides which authored event fires (paced by `RULE_COOLDOWN`, and **frozen while
    the director's model is disconnected** so it never fires blind). An `"unknown"` probe answer
    updates NO state — the machine never acts on a guess. The VLM **decide** brain is opt-in
@@ -84,7 +84,7 @@ model, with a VLM observer grounding pixels back into abstract state.
 
 | Roblox Game Cartridge          | this app                                                    |
 | ------------------------------ | ----------------------------------------------------------- |
-| Luau state machine (engine)    | coordinator + `json-rules-engine` over `history.ts`         |
+| Luau state machine (engine)    | coordinator + shared `decideEvents` gate over `history.ts`  |
 | Video World Model (VWM)        | the Reactor/local video model the browser renders           |
 | VLM observer / visual triggers | the AI director **probe** (`scene_probes.derive_probes`)    |
 | Decomposed conditioning        | scene layers: `base` (World) · `player` (Character) · `movement` (Actions) · `camera` (Dynamics) |
@@ -256,14 +256,14 @@ observations : { [predicate]: bool }  -> the probe's latest reads, posted via op
 random       : number                 -> fresh Math.random() per gameFacts() call; backs `chance`
 ```
 
-**json-rules-engine compatible.** The state above is exposed AS-IS as engine facts by
-`gameFacts()` — a flat object whose field names ARE the rule `fact` names (`firedEvents`,
-`health`, `chunks`, `inventory`, `entityCount`, `objective`, `observations`, `random`). So a
-`json-rules-engine` (v7, in `coordinator/package.json`) rule set can drive the director with
-**no adapter and no second copy of truth** — it reads the one live state each `engine.run()`.
-Authored `requires` gates map 1:1 to rule conditions (`deriveRules` in `coordinator/rules.ts`):
+**Flat facts snapshot.** The state above is exposed AS-IS by `gameFacts()` — a flat object
+whose field names ARE the gate's fields (`firedEvents`, `health`, `chunks`, `inventory`,
+`entityCount`, `objective`, `observations`, `random`). The shared `decideEvents`
+(`lib/event-decide.ts`, reusing `isEventAvailable` from `lib/event-gate.ts`) reads the one live
+state each tick — **no adapter and no second copy of truth**. Authored `requires` gates map 1:1
+to the gate checks below:
 
-| `requires` / field | rule condition |
+| `requires` / field | gate check (`isEventAvailable`) |
 |---|---|
 | `fired: [A,B]` | `firedEvents contains A` AND `contains B` |
 | `firedAny: [A,B]` | `{ any: [firedEvents contains A, contains B] }` |

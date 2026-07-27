@@ -1,4 +1,4 @@
-// Pure derivation of the json-rules-engine `firedEvents` fact from the shared
+// Pure derivation of the `firedEvents` fact from the shared
 // History. Extracted from coordinator.ts so it can be unit-tested WITHOUT importing
 // the coordinator module (which starts a WebSocket server on import).
 //

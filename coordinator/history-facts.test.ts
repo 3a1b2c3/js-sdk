@@ -7,7 +7,7 @@ import { test } from "node:test";
 
 import { History } from "../lib/history";
 import { firedNameFromKey, firedEventNames } from "./history-facts";
-import { buildEngine, decide } from "./rules";
+import { decideEvents } from "../lib/event-decide";
 
 const sustained = (key: string) =>
   ({ key, clause: key, weight: 2, life: { kind: "sustained" } as const });
@@ -30,26 +30,22 @@ test("firedEventNames derives live from History — assert and clear reflect imm
   assert.deepEqual(firedEventNames(h), []);
 });
 
-test("asserting into History unlocks a gated rule through the engine", async () => {
+test("asserting into History unlocks a gated event through the shared decider", () => {
   const events = [
     { name: "Door Opens" },
     { name: "Enter Room", requires: { fired: ["Door Opens"] } },
   ];
-  const engine = buildEngine(events, 0); // warmup 0 → ungated events are eligible at once
   const h = new History();
   const facts = () => ({ firedEvents: firedEventNames(h), health: 100, chunks: 10, inventory: [] });
 
-  // Predecessor not in History → the gated event stays locked.
-  const before = await decide(engine, facts());
-  assert.ok(!before.includes("Enter Room"), "gated event must be locked before its predecessor fires");
+  // Predecessor not in History → the gated event stays locked (warmup 0 → ungated eligible at once).
+  assert.ok(!decideEvents(events, facts(), 0).includes("Enter Room"), "locked before its predecessor fires");
 
   // Assert the predecessor as a scene fact → firedEvents now derives it → gate opens.
   h.assert(sustained("scene:door_opens"));
-  const after = await decide(engine, facts());
-  assert.ok(after.includes("Enter Room"), "gated event must unlock once History holds its predecessor");
+  assert.ok(decideEvents(events, facts(), 0).includes("Enter Room"), "unlocks once History holds its predecessor");
 
   // Clearing History locks it back — proves there is no cached firedEvents copy.
   h.clear();
-  const cleared = await decide(engine, facts());
-  assert.ok(!cleared.includes("Enter Room"), "gated event must re-lock after History is cleared");
+  assert.ok(!decideEvents(events, facts(), 0).includes("Enter Room"), "re-locks after History is cleared");
 });
