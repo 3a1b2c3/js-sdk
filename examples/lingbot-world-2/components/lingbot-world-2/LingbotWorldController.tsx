@@ -497,16 +497,11 @@ export function LingbotWorldController({ className }: { className?: string }) {
         if (m.type === "facts") {
           coordPromptRef.current = m.prompt ?? "";
           recomputePromptAndSendRef.current();
-          // Sync coordinator-side fires (AI director / separate Director panel) into the
-          // local fired-set so gated successors unlock in the player chips + panel. Names
-          // arrive LOWERCASED → map back to the scene's display-case names.
-          console.log("[gate] facts recv — coord fired:", m.fired, "| local scene:", !!sceneRef.current);
           if (Array.isArray(m.fired) && sceneRef.current) {
             const lower = new Set(m.fired);
             const display = sceneRef.current.events
               .filter((e) => lower.has(e.name.toLowerCase()))
               .map((e) => e.name);
-            console.log("[gate] synced fired -> local set:", display);
             if (display.length) syncFired(display);
           }
         } else if (m.type === "vitals") {
@@ -580,15 +575,12 @@ export function LingbotWorldController({ className }: { className?: string }) {
     if (!msg?.type) return;
     switch (msg.type) {
       case "workers_ready":
-        console.log("[gen] workers_ready — tsp_size:", msg.tsp_size);
         setTspSize(msg.tsp_size ?? null);
         break;
       case "prompt_accepted":
-        console.log("[gen] prompt_accepted");
         setHasPrompt(true);
         break;
       case "image_accepted":
-        console.log("[gen] image_accepted:", msg.width, "x", msg.height);
         setHasImage(true);
         setImageInfo({ w: msg.width, h: msg.height });
         break;
@@ -604,14 +596,12 @@ export function LingbotWorldController({ className }: { className?: string }) {
         setCameraPoseActive(msg.camera_pose_active);
         break;
       case "generation_started":
-        console.log("[gen] ▶ generation_started — total chunks:", msg.chunk_num);
         setIsGenerating(true);
         setIsPaused(false);
         setChunkNum(msg.chunk_num);
         setChunkIndex(0);
         break;
       case "chunk_complete":
-        console.log(`[gen] chunk ${msg.chunk_index} complete — action: ${msg.active_action || "still"}`);
         setChunkIndex(msg.chunk_index);
         setActiveAction(msg.active_action || "still");
         // Age persistent facts one chunk. A `steps` fact that runs out (a
@@ -1633,8 +1623,6 @@ export function LingbotWorldController({ className }: { className?: string }) {
   const startInFlightRef = useRef(false);
   const connectAndStart = useCallback(async () => {
     const pending = pendingStartRef.current;
-    console.log("[start] Start clicked → connectAndStart; pending =",
-      pending ? { imageKind: pending.image.kind, promptChars: pending.prompt.length } : "NULL (no game loaded?)");
     // Gate on a live session. Firing set_image/set_prompt/start while the model is
     // "disconnected" just bounces every command with NOT_READY — and because those
     // errors are recoverable the SDK swallows them, so the old path silently looped
@@ -1667,14 +1655,11 @@ export function LingbotWorldController({ className }: { className?: string }) {
     try {
       if (pending) {
         if (pending.image.kind === "url") {
-          console.log("[start] fetching scene image:", pending.image.src);
           const res = await fetch(pending.image.src);
           if (!res.ok) throw new Error(`Failed to load image (${res.status})`);
           const blob = await res.blob();
           const file = new File([blob], pending.image.name, { type: blob.type || "image/jpeg" });
-          console.log("[start] uploading image (", blob.size, "bytes)…");
           const ref = await uploadFile(file);
-          console.log("[start] uploaded, setImage ref=", ref);
           await lw2.setImage({ image: ref });
           setHasImage(true);
         } else if (pending.image.kind === "file") {
@@ -1682,20 +1667,15 @@ export function LingbotWorldController({ className }: { className?: string }) {
           await lw2.setImage({ image: ref });
           setHasImage(true);
           setPendingImage(null);
-          console.log("[start] image (file) set");
-        }
-        console.log("[start] setPrompt (", pending.prompt.length, "chars)…");
+          }
         await lw2.setPrompt({ prompt: pending.prompt });
         setHasPrompt(true);
         pendingStartRef.current = null;
-        console.log("[start] image + prompt sent");
       } else {
         console.warn("[start] pendingStartRef is NULL — starting with no image/prompt (video may be blank). Pick a game before Start.");
       }
-      console.log("[start] calling lw2.start()…");
       await lw2.start();
       setIsGenerating(true);
-      console.log("[start] ✓ lw2.start() ok — generation started");
     } catch (err) {
       console.error("[start] ✗ FAILED — disconnecting session:", err);
       setErrorToast(err instanceof Error ? err.message : pending?.errorLabel ?? "Failed to start");
