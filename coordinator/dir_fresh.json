@@ -1,0 +1,26 @@
+{
+  "scene": "../lib/lingbot-cases/jet-ski-cruise.json",
+  "image": "../../../assets/shark.jpg",
+  "model": "nvidia/nvidia/cosmos3-nano-reasoner",
+  "state": {
+    "facts": "(none)",
+    "health": 100,
+    "fired": [],
+    "step": 1
+  },
+  "system": "You are the DIRECTOR of a real-time interactive world. A video model renders the world; you steer it by triggering pre-authored events at the right moments.\n\nTHE WORLD (identity — never contradict this):\nA man in a red life vest on a white and red jet ski on turquoise water near a sandy beach lined with palm trees, a distant rocky outcrop on the horizon. Sunlit coastal atmosphere with light glinting off the calm sea. The jet ski stays up on the surface of the water the whole time, planing across the top of the waves — it never sinks, submerges, or goes underwater, always riding on the surface.\n\nOBJECTIVE — build the world toward this over time, don't just react frame-by-frame:\nWork against the rider: try to throw them off the jet ski and lure them out into deeper, more dangerous open water away from the safe shallow beach. Favor events that unseat, endanger, or draw the rider seaward — Rogue Wave, Waterspout Forms, Storm Rolls In, Shark Lunges, and ultimately Thrown from the Jet Ski — and push the scene toward the deep open sea on the horizon, wasting the rider's fuel and stranding them. Escalate the danger over time and build on what has already happened; do not just repeat the same event back-to-back.\n\nYou have already fired these events this session (build ON them; don't just repeat):\n(none yet)\nElapsed: 1 chunks.\n\nYou may ONLY trigger events from this list — the SAME set the human director has.\nDo NOT invent new events or write your own prose:\n- \"Shark Appears\": A single tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff tria\n- \"Shark Lunges\": The tall, upright, rigid, sharply pointed SHARK's dorsal fin — a dark grey stiff triangula\n- \"Dolphins Leap Alongside\": A pod of sleek dolphins surfaces and leaps in formation alongside the jet ski, arcing out \n- \"Storm Rolls In\": The sky darkens as heavy storm clouds roll across the sun, the wind whips up, and the calm\n- \"Waterspout Forms\": A towering waterspout twists up from the sea on the horizon ahead — a swirling column of w\n- \"Whale Breaches\": The rider on the jet ski remains the main subject, unchanged, while off to one side a mass\n- \"Bioluminescent Night\": The scene sweeps into night: the sky deepens to star-scattered black and the water turns d\n- \"Volcanic Island Erupts\": The distant rocky outcrop on the horizon erupts into a volcano — glowing orange lava strea\n- \"Rogue Wave\": A towering rogue wave rears up ahead — a steep wall of dark water rising far above the jet\n- \"Thrown from the Jet Ski\": The jet ski hits a wave and bucks hard and the rider is thrown clean off, flung sideways o\n\nRULES:\n- Trigger an event only when it is PLAUSIBLE and fitting given what is visible in the frame and the objective.\n- Choose 0-2 events. An empty list is correct when nothing should change yet.\n\nRespond with ONLY a JSON object, no prose:\n{\"events\": [\"<exact event name from the list>\"]}\n\nCurrent world facts: (none)\nVerified observations (from probes — what is ACTUALLY on screen now; trust these over your own read): (no probe read yet)\nCurrent health: 100",
+  "raw_reply": "{\"events\": [\"Shark Appears\"]}",
+  "parsed": {
+    "events": [
+      "Shark Appears"
+    ]
+  },
+  "fired": [
+    "Shark Appears"
+  ],
+  "elapsed_s": 2.73,
+  "tokens": {
+    "prompt": 929,
+    "completion": 9
+  }
+}

@@ -1,0 +1,352 @@
+// The structured prompt model behind the example scenes, plus the pure
+// composePrompt() function that flattens a scene to the prose string sent
+// via set_prompt. Edits made through the in-page editor are persisted to
+// localStorage and survive reloads; ↺ on a card wipes its override.
+//
+// The default examples (see lingbot-cases-examples.ts) are converted from
+// the "lingbot-cases" corpus, one StructuredExample per case, each with
+// hold-key events (keys 1..9) plus optional jump/crouch/stand prompts.
+
+import { LINGBOT_CASES_EXAMPLE_LIST } from "@/lib/lingbot-cases-examples";
+import type { EventGate } from "./event-gate";
+
+// A starting-image thumbnail for an example card. URLs are served out of
+// this app's public/ directory.
+export interface ImagePreset {
+  label: string;
+  src: string;
+}
+
+// Structured / orthogonal authoring form.
+//
+// Each scene has three layers and a list of events:
+//   - base:     world identity (subject, environment, style)
+//   - camera:   { static, dynamic } framing — selected by WASD state
+//   - movement: { static, dynamic } subject motion — selected by WASD
+//   - events:   detail clauses bound to hold-keys 1..9
+//
+// Each layer is a registry keyed by version id, with a required
+// "default" key. Alternate versions are just additional keys in the
+// same registry — there is no separate "default field + side
+// registry" split. Example shape:
+//
+//   base: {
+//     default: "...subject + environment + style...",
+//     portal_world: "...alternate world this scene can transition to...",
+//     empty: "",
+//   }
+//
+// Events independently choose a version per layer via `baseVersion` /
+// `cameraVersion` / `movementVersion`; omitted means "default".
+//
+// Compatibility / stacking rule. Events stack only if their
+// `baseVersion` matches the active base version (events written
+// against different worlds can't share prose coherently). The active
+// base version is the most-recently-pressed held event's
+// `baseVersion`; events from other versions are suppressed while held.
+// Within the compatible set, the active camera / movement versions are
+// taken from the most-recently-pressed compatible event's choices on
+// those layers — letting a single big event swap to a more compact
+// camera/movement to free token budget for its detail without forcing
+// peers off the stack.
+//
+// Mutex / scene-replace pattern. To author an event whose detail
+// already carries its own subject + environment + camera (the old
+// mutex_replace behaviour), register an "empty" version on each
+// layer (`base.empty = ""`, `camera.empty = { static: "", dynamic:
+// "" }`, `movement.empty = { static: "", dynamic: "" }`) and tag the
+// event with all three. The event's standalone prose becomes the
+// only content sent.
+//
+// camera.<v>.dynamic = strict rear-view tracking (look-input turns
+// the subject's heading); camera.<v>.static = subject locked in place
+// and the camera orbits around it (look-input swings the camera).
+//
+// composePrompt() concatenates the active selection into a single
+// natural-language string. The encoder only ever sees prose; the structure
+// is authoring-time only.
+
+export type ShotVariant = { static: string; dynamic: string };
+export type EventVariant = string | ShotVariant;
+
+// Each layer registry must include a "default" key plus any number of
+// alternate versions. `LayerRegistry<T>` enforces the default; other
+// keys are arbitrary identifiers chosen by the author.
+export type LayerRegistry<T> = { default: T } & Record<string, T>;
+
+// The required default key for every layer registry; events that omit
+// a *Version field implicitly select this version.
+export const DEFAULT_LAYER_VERSION = "default";
+
+export interface NamedEvent {
+  name: string;
+  // Who controls this event. "character" (default) = a character action bound to a
+  // hold-key 1..9 the player presses. "environment" = a world/scene event (scene
+  // change, weather, death) NOT given to the player; it's fired from the
+  // Director panel/AI and applied as a persistent History fact.
+  actor?: "character" | "environment";
+  // Which layer versions this event is authored against. Omit (or set
+  // to "default") to compose against the layer's default version;
+  // otherwise must be a key in the corresponding layer registry.
+  baseVersion?: string;
+  playerVersion?: string; // pick a variant of the PLAYER layer (equip a tool, go overboard)
+  cameraVersion?: string;
+  movementVersion?: string;
+  detail: EventVariant;
+  // Optional player-vital effect applied once when this event is pressed
+  // (fires the shared HUD / coordinator). Explicit per-event — preferred over
+  // the name-keyword fallback. `health` is a delta (+heal / -damage).
+  health?: number;
+  addItem?: string;
+  removeItem?: string;
+  // Optional signed delta on the shared entity/spawn count when this event
+  // fires. +N for a spawn (enemies appear), −N for a kill/despawn. Director
+  // events use this so pressing a spawn key bumps the count; the coordinator
+  // clamps it at 0. First slice of a real coordinator-fact model.
+  count?: number;
+  // Optional declarative gate: the event is only AVAILABLE (pressable / a valid
+  // AI or human director trigger) when these conditions hold against shared
+  // state. Data-only so it lives in the scene JSON. Keep gates rare and
+  // narrative (door appears → reach door); never gate moment-to-moment actions.
+  requires?: EventGate;
+  // A terminal WIN event: when it fires the game is WON (coordinator flips `won`
+  // and fires the win banner). Pair with `empty` versions for a scene-replace
+  // ending. Death (health→0) is the lose-terminal; this is the win side.
+  win?: boolean;
+  // Per-tick fire probability (0..1) once `requires` holds — randomizes WHEN the
+  // event fires after its gate opens (rules-decide only). e.g. minChunks:24 +
+  // chance:0.2 → the pickup arrives at a varied time past chunk 24, not exactly on it.
+  chance?: number;
+  // Tie-break when several gated events are eligible at once: the rules-decide director
+  // fires the HIGHEST-priority tier, choosing at random within it. Omitted → 1 (flat),
+  // so equal-priority events form a fair random pool.
+  priority?: number;
+  // Max times this event may fire (default 1 = fire once). Distinct from `count`,
+  // which is a signed entity spawn/kill delta (e.g. -1 = a death), not a fire cap.
+  maxFires?: number;
+}
+
+// The gate types + predicate now live in ./event-gate — a dependency-free module (no
+// Next.js `@/` aliases, no scene data) so the coordinator's plain tsx can import the
+// SAME gating logic the client uses. Re-exported here for existing importers.
+export { isEventAvailable } from "./event-gate";
+export type { EventGate, GateState } from "./event-gate";
+
+// Per-scene HUD configuration. Optional — omitted → HUD hidden. Sets the
+// starting player vitals shown on the viewport overlay and the max the bar
+// scales to. Events change `health` from here via their `health` deltas.
+export interface HudConfig {
+  show?: boolean; // draw the overlay for this scene (default true when hud present)
+  maxHealth?: number; // full-bar value (default 100)
+  health?: number; // starting health (default maxHealth)
+  healthLabel?: string; // rename the bar for this scene (e.g. "Fuel"). Default "Health".
+  inventory?: string[]; // starting inventory chips (default none)
+}
+
+export interface StructuredScene {
+  base: LayerRegistry<string>;
+  // Optional PLAYER layer — the player/subject (avatar + equipment), split out
+  // of `base` so events can restyle the player (equip a tool, go overboard) WITHOUT
+  // touching the world. Omitted → the subject stays described inside `base` (legacy).
+  player?: LayerRegistry<string>;
+  camera: LayerRegistry<ShotVariant>;
+  movement: LayerRegistry<ShotVariant>;
+  events: NamedEvent[];
+  // Optional HUD (health bar + inventory) config for this scene.
+  hud?: HudConfig;
+  // Sentences appended to the prompt for the vertical controls: jumpPrompt while
+  // jumping (Space), crouchPrompt while crouching (C held), standPrompt on the
+  // crouch RELEASE (the "stands back up" line). Per-scene so they read in-context
+  // and are edited in the scene editor (persisted via the override store).
+  jumpPrompt?: string;
+  crouchPrompt?: string;
+  standPrompt?: string;
+}
+
+// A session objective. `summary` is the player's goal (the human is the Pilot);
+// `director` is the AI Director agent's standing intent so it builds an arc
+// rather than reacting frame-by-frame. success/failure are observer conditions.
+export interface Objective {
+  summary: string;
+  director?: string;
+  success?: string[];
+  failure?: string[];
+  durationChunks?: number;
+  // Name of a scene event fired on WIN. Win = surviving `durationChunks` alive
+  // (a survival proxy for the success condition, since we have no perception).
+  reward?: string;
+}
+
+export interface StructuredExample {
+  id: string;
+  name: string;
+  description?: string;
+  image: ImagePreset;
+  scene: StructuredScene;
+  objective?: Objective;
+  // Private/invisible: when true, the scene is NOT shown in the Quick Start list
+  // (still resolvable by id via STRUCTURED_EXAMPLES). Set "hidden": true in the JSON.
+  hidden?: boolean;
+}
+
+function resolveDetail(e: NamedEvent, isMoving: boolean): string {
+  return typeof e.detail === "string"
+    ? e.detail
+    : e.detail[isMoving ? "dynamic" : "static"];
+}
+
+function baseVersionOf(e: NamedEvent): string {
+  return e.baseVersion ?? DEFAULT_LAYER_VERSION;
+}
+function playerVersionOf(e: NamedEvent): string {
+  return e.playerVersion ?? DEFAULT_LAYER_VERSION;
+}
+function cameraVersionOf(e: NamedEvent): string {
+  return e.cameraVersion ?? DEFAULT_LAYER_VERSION;
+}
+function movementVersionOf(e: NamedEvent): string {
+  return e.movementVersion ?? DEFAULT_LAYER_VERSION;
+}
+
+function resolveBase(scene: StructuredScene, version: string): string {
+  return scene.base[version] ?? scene.base.default;
+}
+// Empty string when a scene has no player layer (legacy scenes) — composePrompt
+// filters empties, so the subject just stays described inside `base` as before.
+function resolvePlayer(scene: StructuredScene, version: string): string {
+  if (!scene.player) return "";
+  return scene.player[version] ?? scene.player.default;
+}
+function resolveCamera(
+  scene: StructuredScene,
+  version: string,
+  isMoving: boolean,
+): string {
+  const variant = scene.camera[version] ?? scene.camera.default;
+  return isMoving ? variant.dynamic : variant.static;
+}
+function resolveMovement(
+  scene: StructuredScene,
+  version: string,
+  isMoving: boolean,
+): string {
+  const variant = scene.movement[version] ?? scene.movement.default;
+  return isMoving ? variant.dynamic : variant.static;
+}
+
+export function composePrompt(
+  scene: StructuredScene,
+  isMoving: boolean,
+  heldSlots: number[],
+  // Sentence appended while a vertical control is engaged (jump/crouch). Passed
+  // in (rather than read from input state here) so this stays a pure function;
+  // the caller decides when jump/crouch is active.
+  verticalPrompt = "",
+): string {
+  const heldEvents = heldSlots
+    .map((slot) => scene.events[slot])
+    .filter((e): e is NamedEvent => Boolean(e));
+
+  // Active base version = the most-recently-pressed held event's choice
+  // (default when nothing is held). Events tagged for other base
+  // versions are suppressed because their detail was authored against a
+  // different world.
+  const activeBase =
+    heldEvents.length > 0
+      ? baseVersionOf(heldEvents[heldEvents.length - 1])
+      : DEFAULT_LAYER_VERSION;
+  const compatible = heldEvents.filter((e) => baseVersionOf(e) === activeBase);
+
+  // Within the compatible set, camera and movement versions are taken
+  // from the most-recently-pressed compatible event's choices. This
+  // lets one big event swap to a compact camera/movement without
+  // forcing other compatible events off the stack.
+  const mostRecentCompatible = compatible[compatible.length - 1];
+  const activeCamera = mostRecentCompatible
+    ? cameraVersionOf(mostRecentCompatible)
+    : DEFAULT_LAYER_VERSION;
+  const activeMovement = mostRecentCompatible
+    ? movementVersionOf(mostRecentCompatible)
+    : DEFAULT_LAYER_VERSION;
+  // Player layer tracks the BASE version by default (world + subject move together),
+  // so an event with baseVersion:"empty"/"downed" gets player."empty"/"downed" —
+  // set those to "" to avoid re-describing the subject a variant base already carries.
+  const activePlayer = mostRecentCompatible
+    ? (mostRecentCompatible.playerVersion ?? activeBase)
+    : DEFAULT_LAYER_VERSION;
+
+  const base = resolveBase(scene, activeBase);
+  const player = resolvePlayer(scene, activePlayer);
+  const camera = resolveCamera(scene, activeCamera, isMoving);
+  const movement = resolveMovement(scene, activeMovement, isMoving);
+  const details = compatible.map((e) => resolveDetail(e, isMoving));
+  // Order: world (base) → subject (player) → shot (camera) → motion → beats.
+  return [base, player, camera, movement, ...details, verticalPrompt]
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join(" ");
+}
+
+// Deep-clone a StructuredScene so the editor can mutate a scene without
+// touching the original constants. Layer registries and events are
+// recreated from scratch; ShotVariant objects are spread.
+export function cloneScene(scene: StructuredScene): StructuredScene {
+  const cloneShotRegistry = (
+    reg: LayerRegistry<ShotVariant>,
+  ): LayerRegistry<ShotVariant> => {
+    const out: Record<string, ShotVariant> = {};
+    for (const [k, v] of Object.entries(reg)) out[k] = { ...v };
+    return out as LayerRegistry<ShotVariant>;
+  };
+  return {
+    base: { ...scene.base },
+    ...(scene.player ? { player: { ...scene.player } } : {}),
+    camera: cloneShotRegistry(scene.camera),
+    movement: cloneShotRegistry(scene.movement),
+    events: scene.events.map((e) => ({
+      ...e,
+      detail: typeof e.detail === "string" ? e.detail : { ...e.detail },
+    })),
+    jumpPrompt: scene.jumpPrompt,
+    crouchPrompt: scene.crouchPrompt,
+    standPrompt: scene.standPrompt,
+  };
+}
+
+// Structural equality on two scenes. Scenes are small and fully
+// JSON-serialisable (strings, plain objects, arrays), so byte-equal
+// JSON is a sound proxy for "no semantic difference". Used to decide
+// whether a user override is meaningful or has reverted to the
+// pristine constant.
+export function scenesEqual(a: StructuredScene, b: StructuredScene): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+// Blank scene used when the user creates a new layered prompt from
+// scratch. The required "default" key is present on every layer.
+export function emptyScene(): StructuredScene {
+  return {
+    base: { default: "" },
+    camera: { default: { static: "", dynamic: "" } },
+    movement: { default: { static: "", dynamic: "" } },
+    events: [],
+    jumpPrompt: "",
+    crouchPrompt: "",
+    standPrompt: "",
+  };
+}
+
+// The example scenarios are sourced from the "lingbot-cases" corpus rather
+// than hand-authored here; see lingbot-cases-examples.ts for the conversion
+// (base_prompt -> base.default, per-slot actions -> events, "space" slot ->
+// jumpPrompt) and provenance notes.
+// Quick Start list — hidden scenes are filtered out (private/invisible).
+export const EXAMPLES: StructuredExample[] = LINGBOT_CASES_EXAMPLE_LIST.filter(
+  (ex) => !ex.hidden,
+);
+
+// ALL examples keyed by id (including hidden ones) — the controller resolves
+// scenes by id, so a hidden scene is still applyable/referenceable, just not
+// shown in the Quick Start list.
+export const STRUCTURED_EXAMPLES: Record<string, StructuredExample> =
+  Object.fromEntries(LINGBOT_CASES_EXAMPLE_LIST.map((ex) => [ex.id, ex]));

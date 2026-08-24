@@ -241,17 +241,30 @@ function computeSceneDiff(
 
 // ---- Layout primitives ----
 
-type LayerName = "base" | "camera" | "movement";
-type VersionField = "baseVersion" | "cameraVersion" | "movementVersion";
+type LayerName = "base" | "player" | "camera" | "movement";
+type VersionField =
+  | "baseVersion"
+  | "playerVersion"
+  | "cameraVersion"
+  | "movementVersion";
 const LAYER_TO_FIELD: Record<LayerName, VersionField> = {
   base: "baseVersion",
+  player: "playerVersion",
   camera: "cameraVersion",
   movement: "movementVersion",
 };
 
-type Tab = "base" | "camera" | "movement" | "vertical" | "events" | "preview";
+type Tab =
+  | "base"
+  | "player"
+  | "camera"
+  | "movement"
+  | "vertical"
+  | "events"
+  | "preview";
 const TABS: { id: Tab; label: string }[] = [
   { id: "base", label: "Base" },
+  { id: "player", label: "Player" },
   { id: "camera", label: "Camera" },
   { id: "movement", label: "Movement" },
   { id: "vertical", label: "Jump / Crouch" },
@@ -266,7 +279,7 @@ const Hint = ({ children }: { children: React.ReactNode }) => (
 );
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
-  <span className="font-mono text-[10px] uppercase tracking-wider text-white/55">
+  <span className="mono-xs uppercase tracking-wider text-white/55">
     {children}
   </span>
 );
@@ -385,7 +398,7 @@ function VersionKeyInput({
         )}
       />
       {error && (
-        <span className="font-mono text-[10px] text-red-400/80">{error}</span>
+        <span className="mono-xs text-red-400/80">{error}</span>
       )}
     </div>
   );
@@ -443,7 +456,7 @@ function VersionCard({
           />
         )}
         {isDefault && (
-          <span className="font-mono text-[10px] text-white/35">
+          <span className="mono-xs text-white/35">
             required — used when no event overrides this layer
           </span>
         )}
@@ -709,6 +722,98 @@ function VersionPicker({
   );
 }
 
+// Set/clear a numeric `requires` scalar on an event from a raw input string,
+// pruning the gate object back to `undefined` when it goes empty so the JSON
+// stays clean (no dangling `"requires": {}`).
+function setReq(
+  event: NamedEvent,
+  key: "minChunks" | "minHealth" | "maxHealth",
+  raw: string,
+): NamedEvent {
+  const trimmed = raw.trim();
+  const v = trimmed === "" ? undefined : Number(trimmed);
+  const req = { ...event.requires };
+  if (v !== undefined && Number.isFinite(v)) req[key] = v;
+  else delete req[key];
+  return { ...event, requires: Object.keys(req).length ? req : undefined };
+}
+
+// Set/clear a `requires` event-name LIST (fired / firedAny / notFired), pruning
+// the key when empty and the whole gate when it goes empty — same clean-JSON
+// discipline as setReq.
+function setReqList(
+  event: NamedEvent,
+  key: "fired" | "firedAny" | "notFired",
+  next: string[],
+): NamedEvent {
+  const req = { ...event.requires };
+  if (next.length) req[key] = next;
+  else delete req[key];
+  return { ...event, requires: Object.keys(req).length ? req : undefined };
+}
+
+// A dependency picker: current selections as removable chips + an "add…" dropdown
+// listing the sibling events not yet chosen. Picking from the dropdown means the
+// name always matches an existing event exactly — no typo can silently disable a gate.
+function DepPicker({
+  label,
+  options,
+  value,
+  onChange,
+  title,
+}: {
+  label: string;
+  options: string[];
+  value: string[];
+  onChange: (next: string[]) => void;
+  title?: string;
+}) {
+  const remaining = options.filter((o) => !value.includes(o));
+  return (
+    <div className="flex flex-col gap-1 min-w-0" title={title}>
+      <FieldLabel>{label}</FieldLabel>
+      <div className="flex flex-wrap items-center gap-1">
+        {value.map((name) => (
+          <span
+            key={name}
+            className="flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 mono-xs text-white/85"
+          >
+            {name}
+            <button
+              type="button"
+              onClick={() => onChange(value.filter((n) => n !== name))}
+              className="text-white/50 hover:text-white"
+              title="remove"
+            >
+              ✕
+            </button>
+          </span>
+        ))}
+        {remaining.length > 0 ? (
+          <select
+            value=""
+            onChange={(e) => {
+              if (e.target.value) onChange([...value, e.target.value]);
+            }}
+            className="h-6 rounded border border-white/15 bg-neutral-900 px-1 mono-xs text-white/70"
+          >
+            <option value="">+ add…</option>
+            {remaining.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        ) : (
+          value.length === 0 && (
+            <span className="mono-xs text-white/30">none</span>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
 function EventCard({
   index,
   event,
@@ -734,6 +839,10 @@ function EventCard({
   const cameraKeys = Object.keys(scene.camera);
   const movementKeys = Object.keys(scene.movement);
   const isBranched = typeof event.detail !== "string";
+  // Sibling events this one can depend on — every other named event in the scene.
+  const siblingNames = scene.events
+    .map((e) => e.name?.trim())
+    .filter((n): n is string => !!n && n !== event.name);
 
   const updateString = (text: string) => onChange({ ...event, detail: text });
   const updateField = (field: "static" | "dynamic", text: string) => {
@@ -766,6 +875,18 @@ function EventCard({
         ? "border-amber-300/35"
         : "border-white/10";
 
+  // Actor at a glance: PLAYER events wash emerald, DIRECTOR events wash fuchsia,
+  // so you can tell them apart while scrolling the list without reading the
+  // toggle. Kept as a background tint (+ colored number badge) so it doesn't
+  // fight the diff-state border above.
+  const isDirector = event.actor === "environment";
+  const actorTint = isDirector
+    ? "bg-fuchsia-400/[0.05]"
+    : "bg-emerald-400/[0.04]";
+  const actorBadge = isDirector
+    ? "border-fuchsia-400/40 bg-fuchsia-400/15 text-fuchsia-100"
+    : "border-emerald-400/40 bg-emerald-400/15 text-emerald-100";
+
   // For an added event, every sub-field is implicitly "new" — skip
   // per-field marks since the card-level "new" pill already says it.
   const showSub = (changed: boolean) => !isAdded && changed;
@@ -773,12 +894,19 @@ function EventCard({
   return (
     <div
       className={cn(
-        "rounded-md border bg-white/[0.025] p-4 flex flex-col gap-3 flex-1 min-h-[320px]",
+        "rounded-md border p-4 flex flex-col gap-3 flex-1 min-h-[320px]",
+        actorTint,
         cardBorder,
       )}
     >
       <div className="flex items-center gap-2 flex-wrap shrink-0">
-        <span className="inline-flex h-7 w-7 items-center justify-center rounded border border-white/20 bg-white/10 font-mono text-[12px] font-bold text-white/85">
+        <span
+          className={cn(
+            "inline-flex h-7 w-7 items-center justify-center rounded border font-mono text-[12px] font-bold",
+            actorBadge,
+          )}
+          title={isDirector ? "Director world-event" : "Player action"}
+        >
           {index + 1}
         </span>
         <Input
@@ -795,6 +923,35 @@ function EventCard({
         {showSub(!!diff?.nameChanged) && (
           <DiffMark variant="edited" label="name" />
         )}
+        {/* PLAYER vs DIRECTOR: is this a hold-key the CHARACTER performs (player)
+            or a persistent WORLD event the Human Director fires (director)? */}
+        <div className="flex items-center overflow-hidden rounded border border-white/15 mono-xs">
+          {(["character", "environment"] as const).map((a) => {
+            const on = (event.actor ?? "character") === a;
+            return (
+              <button
+                key={a}
+                type="button"
+                onClick={() => onChange({ ...event, actor: a })}
+                title={
+                  a === "environment"
+                    ? "Director action — a persistent WORLD event fired from the Human Director panel or its alphabetic hotkey (not a character move)"
+                    : "Player action — a hold-key the CHARACTER performs (number key / WASD)"
+                }
+                className={cn(
+                  "px-2 py-1 uppercase tracking-wide transition-colors",
+                  on
+                    ? a === "environment"
+                      ? "bg-fuchsia-400/25 text-fuchsia-200"
+                      : "bg-emerald-400/25 text-emerald-200"
+                    : "text-white/35 hover:text-white/70",
+                )}
+              >
+                {a}
+              </button>
+            );
+          })}
+        </div>
         <Button
           size="sm"
           variant="ghost"
@@ -819,43 +976,62 @@ function EventCard({
       </div>
 
       <div className="flex flex-wrap items-end gap-4 shrink-0">
+        {/* Cost / reward: the signed health delta applied to the shared HUD when
+            this event fires. Positive = heal/reward, negative = damage/cost. Only
+            visibly moves a bar on scenes with a `hud` block. */}
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <FieldLabel>base version</FieldLabel>
-            {showSub(!!diff?.baseVersionChanged) && (
-              <DiffMark variant="edited" />
+          <FieldLabel>cost · health Δ</FieldLabel>
+          <Input
+            type="number"
+            inputMode="numeric"
+            value={event.health ?? ""}
+            placeholder="0"
+            onChange={(e) => {
+              const raw = e.target.value.trim();
+              const v = raw === "" ? undefined : Number(raw);
+              onChange({
+                ...event,
+                health: v !== undefined && Number.isFinite(v) ? v : undefined,
+              });
+            }}
+            title="Health change when this event fires (shared HUD / coordinator vitals). Positive = heal / reward, negative = damage / cost. Blank = no effect. Only visible on scenes with a hud block."
+            className={cn(
+              "h-8 w-20 font-mono text-[12px] tabular-nums",
+              (event.health ?? 0) < 0
+                ? "text-red-300"
+                : (event.health ?? 0) > 0
+                  ? "text-emerald-300"
+                  : undefined,
             )}
-          </div>
-          <VersionPicker
-            value={event.baseVersion ?? DEFAULT_LAYER_VERSION}
-            options={baseKeys}
-            onChange={(v) => onChange({ ...event, baseVersion: v })}
           />
         </div>
+        {/* Spawn/kill: signed delta on the shared entity count when fired.
+            +N = spawn (enemies appear), −N = kill/despawn. Director events use it
+            so pressing a spawn key ups the count. */}
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <FieldLabel>camera version</FieldLabel>
-            {showSub(!!diff?.cameraVersionChanged) && (
-              <DiffMark variant="edited" />
+          <FieldLabel>count · Δ</FieldLabel>
+          <Input
+            type="number"
+            inputMode="numeric"
+            value={event.count ?? ""}
+            placeholder="0"
+            onChange={(e) => {
+              const raw = e.target.value.trim();
+              const v = raw === "" ? undefined : Number(raw);
+              onChange({
+                ...event,
+                count: v !== undefined && Number.isFinite(v) ? v : undefined,
+              });
+            }}
+            title="Signed change to the shared entity/spawn count when this event fires. +N = spawn (enemies appear), −N = kill/despawn. Blank = no effect. Clamped at 0."
+            className={cn(
+              "h-8 w-20 font-mono text-[12px] tabular-nums",
+              (event.count ?? 0) > 0
+                ? "text-amber-300"
+                : (event.count ?? 0) < 0
+                  ? "text-sky-300"
+                  : undefined,
             )}
-          </div>
-          <VersionPicker
-            value={event.cameraVersion ?? DEFAULT_LAYER_VERSION}
-            options={cameraKeys}
-            onChange={(v) => onChange({ ...event, cameraVersion: v })}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <FieldLabel>movement version</FieldLabel>
-            {showSub(!!diff?.movementVersionChanged) && (
-              <DiffMark variant="edited" />
-            )}
-          </div>
-          <VersionPicker
-            value={event.movementVersion ?? DEFAULT_LAYER_VERSION}
-            options={movementKeys}
-            onChange={(v) => onChange({ ...event, movementVersion: v })}
           />
         </div>
         <label className="ml-auto flex items-center gap-2 font-mono text-[11px] text-white/70 cursor-pointer">
@@ -870,6 +1046,109 @@ function EventCard({
             <DiffMark variant="edited" label="shape" />
           )}
         </label>
+      </div>
+
+      {/* Gating & outcome — when this event is allowed to fire, and whether it
+          ends the run. `requires` scalars gate on the shared game state; `chance`
+          randomizes timing (rules-engine director); `win` makes it terminal. The
+          event-list gates (fired / firedAny / notFired) + item grants stay
+          JSON-only for now — they need a sibling-event picker. */}
+      <div className="flex flex-wrap items-end gap-4 shrink-0">
+        <div className="flex flex-col gap-1">
+          <FieldLabel>min chunks</FieldLabel>
+          <Input
+            type="number"
+            inputMode="numeric"
+            value={event.requires?.minChunks ?? ""}
+            placeholder="—"
+            onChange={(e) => onChange(setReq(event, "minChunks", e.target.value))}
+            title="Earliest chunk this can fire — a time gate (~0.75s/chunk; 24 ≈ 18s, 160 ≈ 2 min). Blank = no time gate."
+            className="h-8 w-20 font-mono text-[12px] tabular-nums"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <FieldLabel>min health</FieldLabel>
+          <Input
+            type="number"
+            inputMode="numeric"
+            value={event.requires?.minHealth ?? ""}
+            placeholder="—"
+            onChange={(e) => onChange(setReq(event, "minHealth", e.target.value))}
+            title="Only fires while health ≥ N (e.g. gate a win on still being alive). Blank = no floor."
+            className="h-8 w-20 font-mono text-[12px] tabular-nums"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <FieldLabel>max health</FieldLabel>
+          <Input
+            type="number"
+            inputMode="numeric"
+            value={event.requires?.maxHealth ?? ""}
+            placeholder="—"
+            onChange={(e) => onChange(setReq(event, "maxHealth", e.target.value))}
+            title="Only fires while health ≤ N (e.g. 0 for a death terminal). Blank = no ceiling."
+            className="h-8 w-20 font-mono text-[12px] tabular-nums"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <FieldLabel>chance</FieldLabel>
+          <Input
+            type="number"
+            inputMode="decimal"
+            step="0.05"
+            min="0"
+            max="1"
+            value={event.chance ?? ""}
+            placeholder="—"
+            onChange={(e) => {
+              const raw = e.target.value.trim();
+              const v = raw === "" ? undefined : Number(raw);
+              onChange({
+                ...event,
+                chance: v !== undefined && Number.isFinite(v) ? v : undefined,
+              });
+            }}
+            title="Per-tick fire probability once the gate is open (0.2 = 20%/tick → randomized arrival, not the instant it opens). Blank = fire as soon as gated. Rules-engine director only."
+            className="h-8 w-20 font-mono text-[12px] tabular-nums"
+          />
+        </div>
+        <label className="flex items-center gap-2 font-mono text-[11px] text-white/70 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!!event.win}
+            onChange={(e) => onChange({ ...event, win: e.target.checked || undefined })}
+            className="accent-emerald-300"
+          />
+          win (ends run)
+        </label>
+      </div>
+
+      {/* Event dependencies — pick sibling events by name. fired = AND (all must
+          have fired first), any = OR (at least one), blocked by = mutex/one-shot
+          (can't fire if any listed event has). Names come from a dropdown, so a
+          gate can never reference a misspelled/absent event. */}
+      <div className="flex flex-wrap items-start gap-4 shrink-0">
+        <DepPicker
+          label="requires · fired (all)"
+          options={siblingNames}
+          value={event.requires?.fired ?? []}
+          onChange={(next) => onChange(setReqList(event, "fired", next))}
+          title="AND — every selected event must already have fired before this one can."
+        />
+        <DepPicker
+          label="requires · any (or)"
+          options={siblingNames}
+          value={event.requires?.firedAny ?? []}
+          onChange={(next) => onChange(setReqList(event, "firedAny", next))}
+          title="OR — at least one selected event must have fired for this to unlock."
+        />
+        <DepPicker
+          label="blocked by · not fired"
+          options={siblingNames}
+          value={event.requires?.notFired ?? []}
+          onChange={(next) => onChange(setReqList(event, "notFired", next))}
+          title="This can't fire if any selected event has fired. Ring them together (each blocks the others) for a mutually-exclusive group."
+        />
       </div>
 
       {isBranched ? (
@@ -1054,10 +1333,10 @@ function PreviewPanel({ scene }: { scene: StructuredScene }) {
 
       <div className="rounded-md border border-white/10 bg-black/40 p-4 w-full flex flex-col gap-2">
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+          <div className="mono-xs uppercase tracking-wider text-white/40">
             composed prompt ({composed.length} chars)
           </div>
-          <div className="ml-auto flex items-center gap-2 flex-wrap font-mono text-[10px] text-white/55">
+          <div className="ml-auto flex items-center gap-2 flex-wrap mono-xs text-white/55">
             {(["base", "camera", "movement", "event"] as SegmentKind[]).map(
               (k) => {
                 const c = SEGMENT_PALETTE[k];
@@ -1188,6 +1467,8 @@ export function LayeredSceneEditor({
 
   const setBase = (next: LayerRegistry<string>) =>
     onChange({ ...scene, base: next });
+  const setPlayer = (next: LayerRegistry<string>) =>
+    onChange({ ...scene, player: next });
   const setCamera = (next: LayerRegistry<ShotVariant>) =>
     onChange({ ...scene, camera: next });
   const setMovement = (next: LayerRegistry<ShotVariant>) =>
@@ -1201,6 +1482,7 @@ export function LayeredSceneEditor({
 
   const counts: Record<Tab, number> = {
     base: Object.keys(scene.base).length,
+    player: scene.player ? Object.keys(scene.player).length : 0,
     camera: Object.keys(scene.camera).length,
     movement: Object.keys(scene.movement).length,
     vertical: (scene.jumpPrompt ? 1 : 0) + (scene.crouchPrompt ? 1 : 0),
@@ -1213,6 +1495,7 @@ export function LayeredSceneEditor({
   // tab-level mark since the Events panel renders an inline notice.
   const editCounts: Record<Tab, number> = {
     base: diff ? diff.base.added.size + diff.base.edited.size : 0,
+    player: 0, // player layer has no diff wired yet (edited via the Player tab)
     camera: diff
       ? diff.camera.added.size +
         diff.camera.staticChanged.size +
@@ -1257,12 +1540,12 @@ export function LayeredSceneEditor({
               {title ?? "Edit layered scene"}
             </h2>
             {subtitle && (
-              <span className="font-mono text-[10px] text-white/45 truncate">
+              <span className="mono-xs text-white/45 truncate">
                 {subtitle}
               </span>
             )}
           </div>
-          <span className="font-mono text-[10px] text-white/35 shrink-0">
+          <span className="mono-xs text-white/35 shrink-0">
             Auto-saved to browser
           </span>
           <div className="ml-auto flex items-center gap-2 shrink-0">
@@ -1338,6 +1621,14 @@ export function LayeredSceneEditor({
                 diff={diff?.base ?? null}
                 onChange={setBase}
                 onRename={(o, n) => renameLayerVersion("base", o, n)}
+              />
+            )}
+            {tab === "player" && (
+              <BasePanel
+                registry={scene.player ?? { default: "" }}
+                diff={null}
+                onChange={setPlayer}
+                onRename={(o, n) => renameLayerVersion("player", o, n)}
               />
             )}
             {tab === "camera" && (

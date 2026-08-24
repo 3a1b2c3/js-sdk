@@ -1,0 +1,108 @@
+{
+  "scene": "../lib/lingbot-cases/noir-alley-patrol.json",
+  "image": "../../../assets/pistol.jpg",
+  "model": "nvidia/nvidia/nemotron-nano-12b-v2-vl",
+  "probe_count": 11,
+  "probes": [
+    {
+      "id": "state_downed",
+      "q": "Is the scene in the 'downed' state — A narrow urban alley at night where a uniformed police officer in dark",
+      "observe": "state:downed"
+    },
+    {
+      "id": "duplicate_subject",
+      "q": "Is there more than one of the main subject — a duplicate, clone, or second copy?",
+      "onTrue": {
+        "op": "assert",
+        "key": "fix:duplicate_subject",
+        "clause": "There is EXACTLY ONE main subject in frame — a single character, no duplicate and no clone."
+      },
+      "observe": "duplicate_subject"
+    },
+    {
+      "id": "subject_out_of_frame",
+      "q": "Is the main subject missing, off-screen, or not clearly visible?",
+      "onTrue": {
+        "op": "assert",
+        "key": "fix:subject_out_of_frame",
+        "clause": "The main subject is re-centred in frame, clearly in view."
+      },
+      "observe": "subject_out_of_frame"
+    },
+    {
+      "id": "gunman_on_the_fire_escape",
+      "q": "Is this visible in the frame now: EXACTLY ONE gunman appears high up on the metal fire escape above the alley ahead — a sing",
+      "observe": "gunman_on_the_fire_escape"
+    },
+    {
+      "id": "gunman_falls",
+      "q": "Is this visible in the frame now: THE single gunman in the gray jacket and mask up on the fire escape — the only one, a lone",
+      "observe": "gunman_falls"
+    },
+    {
+      "id": "chicken_struts_in",
+      "q": "Is this visible in the frame now: A single scruffy chicken struts out into the middle of the rain-soaked alley, bobbing its ",
+      "observe": "chicken_struts_in"
+    },
+    {
+      "id": "drone_descends",
+      "q": "Is this visible in the frame now: A small quadcopter drone drops down into the alley from above, hovering at head height wit",
+      "observe": "drone_descends"
+    },
+    {
+      "id": "player_falls_and_dies",
+      "q": "Is this visible in the frame now: The officer staggers, his knees buckle, and he collapses forward onto the wet asphalt, his",
+      "observe": "player_falls_and_dies"
+    },
+    {
+      "id": "exit_door_appears",
+      "q": "Is this visible in the frame now: A shop doorway in the brick building along the side of the lane swings wide open and flood",
+      "observe": "exit_door_appears"
+    },
+    {
+      "id": "reach_the_door_extraction",
+      "q": "Is this visible in the frame now: Over-the-shoulder third-person view from behind the uniformed police officer in dark blue ",
+      "observe": "reach_the_door_extraction"
+    },
+    {
+      "id": "police_car_turns_up",
+      "q": "Is this visible in the frame now: The officer stays the focus, unchanged in pose, while a single police squad car turns up a",
+      "observe": "police_car_turns_up"
+    }
+  ],
+  "system": "You are a visual state checker. Answer each question true or false about the image. Respond with ONLY a JSON object mapping each id to true or false.",
+  "user_text": "Answer each of these yes/no questions about the image. Respond with ONLY a JSON object mapping each id to true or false.\n\n- state_downed: Is the scene in the 'downed' state — A narrow urban alley at night where a uniformed police officer in dark\n- duplicate_subject: Is there more than one of the main subject — a duplicate, clone, or second copy?\n- subject_out_of_frame: Is the main subject missing, off-screen, or not clearly visible?\n- gunman_on_the_fire_escape: Is this visible in the frame now: EXACTLY ONE gunman appears high up on the metal fire escape above the alley ahead — a sing\n- gunman_falls: Is this visible in the frame now: THE single gunman in the gray jacket and mask up on the fire escape — the only one, a lone\n- chicken_struts_in: Is this visible in the frame now: A single scruffy chicken struts out into the middle of the rain-soaked alley, bobbing its \n- drone_descends: Is this visible in the frame now: A small quadcopter drone drops down into the alley from above, hovering at head height wit\n- player_falls_and_dies: Is this visible in the frame now: The officer staggers, his knees buckle, and he collapses forward onto the wet asphalt, his\n- exit_door_appears: Is this visible in the frame now: A shop doorway in the brick building along the side of the lane swings wide open and flood\n- reach_the_door_extraction: Is this visible in the frame now: Over-the-shoulder third-person view from behind the uniformed police officer in dark blue \n- police_car_turns_up: Is this visible in the frame now: The officer stays the focus, unchanged in pose, while a single police squad car turns up a",
+  "raw_reply": "```json\n{\n  \"state_downed\": false,\n  \"duplicate_subject\": false,\n  \"subject_out_of_frame\": false,\n  \"gunman_on_the_fire_escape\": false,\n  \"gunman_falls\": false,\n  \"chicken_struts_in\": false,\n  \"drone_descends\": false,\n  \"player_falls_and_dies\": false,\n  \"exit_door_appears\": false,\n  \"reach_the_door_extraction\": true,\n  \"police_car_turns_up\": false\n}\n```",
+  "answers": {
+    "state_downed": false,
+    "duplicate_subject": false,
+    "subject_out_of_frame": false,
+    "gunman_on_the_fire_escape": false,
+    "gunman_falls": false,
+    "chicken_struts_in": false,
+    "drone_descends": false,
+    "player_falls_and_dies": false,
+    "exit_door_appears": false,
+    "reach_the_door_extraction": true,
+    "police_car_turns_up": false
+  },
+  "observations": {
+    "state:downed": false,
+    "duplicate_subject": false,
+    "subject_out_of_frame": false,
+    "gunman_on_the_fire_escape": false,
+    "gunman_falls": false,
+    "chicken_struts_in": false,
+    "drone_descends": false,
+    "player_falls_and_dies": false,
+    "exit_door_appears": false,
+    "reach_the_door_extraction": true,
+    "police_car_turns_up": false
+  },
+  "ops": [],
+  "elapsed_s": 5.02,
+  "tokens": {
+    "prompt": 2232,
+    "completion": 117
+  }
+}

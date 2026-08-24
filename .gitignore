@@ -2,6 +2,10 @@ node_modules/
 dist/
 .next/
 
+# Python bytecode / caches — never track anywhere in the tree.
+__pycache__/
+*.pyc
+
 # Never commit local environment files anywhere in the tree. The only
 # exception is the `.env.example` templates committed alongside packages.
 **/.env
@@ -10,6 +14,9 @@ dist/
 
 .DS_Store
 *.log
+*.jsonl
+*.err
+*.out
 CLAUDE.md
 next-env.d.ts
 # Next.js example templates ship a tracked next-env.d.ts so cloned
